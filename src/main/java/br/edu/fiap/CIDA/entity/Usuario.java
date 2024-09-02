@@ -1,12 +1,14 @@
 package br.edu.fiap.CIDA.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -25,7 +27,7 @@ public class Usuario {
     @Column(name = "ID_USUARIO")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(
             name = "id_auth ",
             referencedColumnName = "id_auth " ,
@@ -36,19 +38,21 @@ public class Usuario {
     private Auth auth_user;
 
     @Column(name = "TELEFONE")
+    @NotEmpty(message = "Telefone não pode estar em branco")
     private String telefone;
 
     @Column(name = "DATA_CRIACAO")
-    private LocalDate dataCriacao;
-
-    @Column(name = "IDENTIFICACAO")
-    private String identificacao;
-
+    private LocalDateTime dataCriacao;
 
     @Column(name = "STATUS")
     private String status;
 
-//    @Column(name = "EMAIL_USUARIO")
-//    private String email;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_documento")
+    private TipoDocumento tipoDoc;
+
+    @Column(name = "num_documento")
+    @NotEmpty(message = "Numero do documento não pode estar em branco")
+    private String numeroDocumento;
 
 }
