@@ -1,0 +1,53 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Usuário</title>
+    <!-- Adiciona o CSS do Bootstrap para estilizar o formulário -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h2>Cadastrar Usuário</h2>
+    <!-- Formulário de cadastro de usuário -->
+    <form th:object="${usuario}" action="/usuario" method="post">
+        <div class="mb-3">
+            <label for="email" class="form-label">Endereço de Email</label>
+            <!-- Campo de entrada para o email -->
+            <input type="email" class="form-control" id="email" th:field="*{auth_user.email}" required>
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('auth_user.email')}" th:errors="*{auth_user.email}"></div>
+        </div>
+        <div class="mb-3">
+            <label for="senha" class="form-label">Senha</label>
+            <!-- Campo de entrada para a senha -->
+            <input type="password" class="form-control" id="senha" th:field="*{auth_user.hashSenha}" required>
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('auth_user.hashSenha')}" th:errors="*{auth_user.hashSenha}"></div>
+        </div>
+        <div class="mb-3">
+            <label for="telefone" class="form-label">Telefone</label>
+            <!-- Campo de entrada para o telefone -->
+            <input type="text" class="form-control" id="telefone" th:field="*{telefone}" required>
+        </div>
+        <div class="mb-3">
+            <label for="tipoDoc" class="form-label">Tipo de Documento</label>
+            <!-- Campo de seleção para o tipo de documento -->
+            <select class="form-control" id="tipoDoc" th:field="*{tipoDoc}" required>
+                <option th:each="tipo : ${tipoDoc}" th:value="${tipo}" th:text="${tipo}">Selecione o tipo de documento </option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="numeroDocumento" class="form-label">Número do Documento</label>
+            <!-- Campo de entrada para o número do documento -->
+            <input type="text" class="form-control" id="numeroDocumento" th:field="*{numeroDocumento}" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Cadastrar</button>
+    </form>
+</div>
+
+<!-- Adiciona o JavaScript do Bootstrap para interatividade -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
