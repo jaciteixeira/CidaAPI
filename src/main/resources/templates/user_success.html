@@ -1,10 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
-    <title>user_success</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enviar Arquivo</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
-<body>
-<h2>user_success</h2>
+<body th:object="${usuario}">
+<div class="container mt-5">
+    <h2>Enviar Arquivo</h2>
+    <h2 th:text="*{id}"></h2>
+    <!-- <button type="submit" class="btn btn-primary">Enviar</button> -->
+    <div class="text-center mt-4">
+        <a th:href="@{/{id}/enviar_arquivo(id=${usuario.id})}" class="btn btn-primary">Adicionar Arquivo</a>
+    </div>
+</div>
 </body>
 </html>
