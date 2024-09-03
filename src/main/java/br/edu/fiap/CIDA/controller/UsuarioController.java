@@ -15,10 +15,16 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -33,6 +39,9 @@ public class UsuarioController {
     UsuarioRepository repo;
     @Autowired
     private ArquivoRepository arquivoRepository;
+    
+    private static final String BASE_FOLDER = "file_server/arquivos_empresas";
+    private final String ARQUIVO_FOLDER = System.getProperty("user.dir") + "/" + BASE_FOLDER;
 
     @GetMapping("/")
     public String index() {
@@ -73,26 +82,38 @@ public class UsuarioController {
 
             // Salva o usuário
             repo.save(user);
-            System.out.println(user);
+            System.out.println("Direcionando para user_success");
 
-            var mv = new ModelAndView("enviar_arquivo");
-            mv.addObject(user);
+            var mv = new ModelAndView("user_success");
+            mv.addObject("usuario",user);
 
             return mv;
         }
     }
 
-    @GetMapping("/enviar_arquivo")
-    public ModelAndView novoArquivo() {
+    @GetMapping("/{id}/enviar_arquivo")
+    public ModelAndView novoArquivo(@PathVariable Long id) {
+        Optional<Usuario> user = repo.findById(id);
 
-        ModelAndView mv = new ModelAndView("enviar_arquivo");
-        mv.addObject("arquivo", new Arquivo());
+        if (user.isPresent()) {
+            Usuario usuario = user.get();
+            var arq = new Arquivo();
+            arq.setUsuario(usuario);
 
-        return mv;
+            ModelAndView mv = new ModelAndView("enviar_arquivo");
+            mv.addObject("arquivo", arq);
+            mv.addObject("usuario", usuario);  // Adiciona o usuário ao modelo
+            System.out.println("Id Usuario: " + id);
+            System.out.println(arq);
+            return mv;
+        } else {
+            // Caso o usuário não seja encontrado
+            return new ModelAndView("error").addObject("message", "Usuário não encontrado");
+        }
     }
     @Transactional
     @PostMapping(value = "/{id}/arquivo/upload")
-    public ModelAndView uploadArquivo(@RequestPart("arquivo") MultipartFile file, @PathVariable("id") Long id, BindingResult bindingResult, String url) {
+    public ModelAndView uploadArquivo(@RequestPart("file") MultipartFile file, @PathVariable("id") Long id, BindingResult bindingResult, @RequestParam String url) {
         // Obtém o usuário a partir do ID
         Optional<Usuario> usuarioOptional = repo.findById(id);
 
@@ -127,15 +148,28 @@ public class UsuarioController {
 
                 // Salva o objeto Arquivo no banco de dados
                 arquivoRepository.save(arquivo);
+                
+                Path destination = Paths
+                        .get(ARQUIVO_FOLDER)
+                        .normalize()
+                        .toAbsolutePath();
+                try {
+                    if (!Files.exists(Path.of( ARQUIVO_FOLDER ))) Files.createDirectories(Path.of ( ARQUIVO_FOLDER ));
+                    Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                    System.err.println( "[ IOEXCEPTION ][  ARQUIVO - UPLOAD  ] -  ERRO NO UPLOAD DO ARQUIVO:  " + e.getMessage() );
+//                    log.debug("[ IOEXCEPTION ][  ARQUIVO - UPLOAD  ] -  ERRO NO UPLOAD DO ARQUIVO:  " + e.getMessage());
+                    
+                }
 
                 return new ModelAndView("upload_success").addObject("arquivo", arquivo);
 
             } catch (Exception e) {
                 e.printStackTrace();
-                return new ModelAndView("error").addObject("message", "Erro ao salvar o arquivo.");
+                return new ModelAndView("error_arquivo").addObject("message", "Erro ao salvar o arquivo.");
             }
         } else {
-            return new ModelAndView("error").addObject("message", "Tipo de arquivo não permitido.");
+            return new ModelAndView("error_arquivo").addObject("message", "Tipo de arquivo não permitido.");
         }
     }
 

@@ -8,19 +8,23 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-<div class="container mt-5">
+<div class="container mt-5" th:object="${arquivo}">
     <h2>Enviar Arquivo</h2>
-    <form th:object="${usuario}" method="post" enctype="multipart/form-data" th:action="@{/{id}(id=${usuario.id})/arquivo/upload}">
+    <h2 th:text="*{usuario.id}"></h2>
+    <form  method="post" th:action="@{/${usuario.id}/arquivo/upload}" enctype="multipart/form-data">
+
         <div class="form-group">
             <label for="arquivo">Escolha o arquivo:</label>
-            <!-- Use th:field para associar ao nome do parâmetro esperado no controlador -->
-            <input type="file" class="form-control-file" id="arquivo" th:field="*{arquivo}" name="arquivo" required>
+            <!-- Nome do campo deve corresponder ao nome do parâmetro no controlador -->
+            <input type="file" class="form-control-file" id="file" name="file" required>
         </div>
         <div class="form-group">
             <label for="url">URL do arquivo:</label>
             <input type="text" class="form-control" id="url" th:field="*{url}" name="url">
         </div>
-        <button type="submit" class="btn btn-primary">Enviar</button>
+        
+	    <button type="submit" class="btn btn-primary">Enviar</button>
+	    
     </form>
 </div>
 </body>
