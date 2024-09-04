@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login</title>
+</head>
+<body>
+<h2>Login</h2>
+<form id="loginForm" th:action="@{/login}" method="post">
+    <div>
+        <label>Username:</label>
+        <input type="text" name="username" id="username"/>
+    </div>
+    <div>
+        <label>Password:</label>
+        <input type="password" name="password" id="password"/>
+    </div>
+    <div>
+        <button type="submit">Login</button>
+    </div>
+</form>
+
+<script>
+    document.getElementById("loginForm").addEventListener("submit", function(event) {
+        // Armazena o nome de usuário no localStorage
+        var username = document.getElementById("username").value;
+        localStorage.setItem("username", username);
+    });
+</script>
+</body>
+</html>

@@ -11,7 +11,8 @@
 <div class="container mt-5" th:object="${arquivo}">
     <h2>Enviar Arquivo</h2>
     <h2 th:text="*{usuario.id}"></h2>
-    <form  method="post" th:action="@{/${usuario.id}/arquivo/upload}" enctype="multipart/form-data">
+    <h2 th:text="${usuario.id}"></h2>
+    <form  method="post" th:action="@{/{usuarioId}/arquivo/upload(usuarioId=${usuario.id})}" enctype="multipart/form-data">
 
         <div class="form-group">
             <label for="arquivo">Escolha o arquivo:</label>

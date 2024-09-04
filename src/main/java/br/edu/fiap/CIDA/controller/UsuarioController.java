@@ -40,7 +40,7 @@ public class UsuarioController {
     @Autowired
     private ArquivoRepository arquivoRepository;
     
-    private static final String BASE_FOLDER = "file_server/arquivos_empresas";
+    private static final String BASE_FOLDER = "file_server/arquivos_empresas/";
     private final String ARQUIVO_FOLDER = System.getProperty("user.dir") + "/" + BASE_FOLDER;
 
     @GetMapping("/")
@@ -113,25 +113,30 @@ public class UsuarioController {
     }
     @Transactional
     @PostMapping(value = "/{id}/arquivo/upload")
-    public ModelAndView uploadArquivo(@RequestPart("file") MultipartFile file, @PathVariable("id") Long id, BindingResult bindingResult, @RequestParam String url) {
+    public ModelAndView uploadArquivo(@RequestPart("file") MultipartFile file,
+//                                      BindingResult bindingResult,
+                                      @PathVariable("id") Long id,
+                                      @RequestParam String url) {
         // Obtém o usuário a partir do ID
         Optional<Usuario> usuarioOptional = repo.findById(id);
+        System.out.println(usuarioOptional);
+        System.out.println(usuarioOptional.isEmpty());
 
         // Verifica se o usuário existe
         if (usuarioOptional.isEmpty()) {
             return new ModelAndView("error").addObject("message", "Usuário não encontrado.");
         }
 
-        // Verifica se há erros de validação
-        if (bindingResult.hasErrors()) {
-            return new ModelAndView("enviar_arquivo");
-        }
+//        // Verifica se há erros de validação
+//        if (bindingResult.hasErrors()) {
+//            return new ModelAndView("enviar_arquivo");
+//        }
 
         // Obtém a extensão do arquivo
         String extension = StringUtils.getFilenameExtension(file.getOriginalFilename());
 
         // Lista de extensões permitidas
-        List<String> textExtensions = Arrays.asList("txt", "doc", "docx", "rtf", "odt", "csv", "tsv", "json", "xml", "yaml", "yml", "java", "py", "js", "html", "css", "md", "ini", "conf", "properties");
+        List<String> textExtensions = Arrays.asList("txt", "doc", "docx", "rtf", "odt", "csv", "tsv", "json", "xml", "yaml", "yml", "java", "py", "js", "html", "css", "md", "ini", "conf", "properties", "pdf", "sql");
 
         // Verifica se o tipo de conteúdo é texto ou se a extensão está na lista de extensões permitidas
         if ((file.getContentType() != null && extension != null && textExtensions.contains(extension.toLowerCase()))) {
@@ -151,6 +156,7 @@ public class UsuarioController {
                 
                 Path destination = Paths
                         .get(ARQUIVO_FOLDER)
+                        .resolve(arquivo.getNome())
                         .normalize()
                         .toAbsolutePath();
                 try {
@@ -166,11 +172,16 @@ public class UsuarioController {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                return new ModelAndView("error_arquivo").addObject("message", "Erro ao salvar o arquivo.");
+                return new ModelAndView("error").addObject("message", "Erro ao salvar o arquivo.");
             }
         } else {
-            return new ModelAndView("error_arquivo").addObject("message", "Tipo de arquivo não permitido.");
+            return new ModelAndView("error").addObject("message", "Tipo de arquivo não permitido.");
         }
+    }
+
+    @GetMapping("/login")
+    public String login() {
+        return "login"; // nome da página de login (login.html)
     }
 
 
