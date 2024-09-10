@@ -9,6 +9,13 @@ spring:
 server:
   port: 8085
 
+azure:
+  storage:
+    account-name: ""
+    account-key: ""
+    container-name: ""
+    connection-string: ""
+
 #springdoc:
 #  swagger-ui:
 #    path: /swagger-ui.html
