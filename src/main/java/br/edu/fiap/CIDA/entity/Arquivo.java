@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 @Entity
 @Table(name = "T_OP_ARQUIVO ", uniqueConstraints = {
-        @UniqueConstraint(name = "UK_NOME", columnNames = "NM_ARQUIVO")
+        @UniqueConstraint(name = "UK_OP_NOME", columnNames = "NM_ARQUIVO")
 })
 public class Arquivo {
     @Id

@@ -14,7 +14,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "T_OP_AUTH")
+@Table(name = "T_OP_AUTH", uniqueConstraints = {
+        @UniqueConstraint(name = "UK_OP_EMAIL", columnNames = "EMAIL")
+})
 public class Auth {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SQ_OP_AUTH")
@@ -22,11 +24,8 @@ public class Auth {
     @Column(name = "id_auth")
     private Long id;
     @Column(name = "EMAIL")
-    @NotEmpty(message = "Email não pode estar em branco")
     private String email;
     @Column(name = "HASH_SENHA")
-    @Pattern(regexp = "(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,16}")
-    @NotEmpty(message = "Senha é obrigatório!")
     private String hashSenha;
     @Column(name = "ULTIMO_LOGIN")
     private LocalDateTime ultimoLogin;

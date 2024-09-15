@@ -10,12 +10,17 @@
 <body>
 <div class="container mt-5" th:object="${arquivo}">
     <h2>Enviar Arquivo</h2>
-    <h2 th:text="*{usuario.id}"></h2>
-    <h2 th:text="${usuario.id}"></h2>
-    <form  method="post" th:action="@{/{usuarioId}/arquivo/upload(usuarioId=${usuario.id})}" enctype="multipart/form-data">
+
+    <h2 th:text="*{usuario.id}">ID do Usuário</h2>
+    <h2 th:text="*{usuario.nomeContainer}">Nome do Container</h2>
+<!--    &lt;!&ndash; Exibe informações do usuário, se disponíveis &ndash;&gt;-->
+<!--    <div th:if="${usuario != null}">-->
+<!--    </div>-->
+
+    <form  method="post" th:action="@{/{usuarioId}/arquivo/upload(usuarioId=${arquivo.usuario.id})}" enctype="multipart/form-data">
 
         <div class="form-group">
-            <label for="arquivo">Escolha o arquivo:</label>
+            <label for="file">Escolha o arquivo:</label>
             <!-- Nome do campo deve corresponder ao nome do parâmetro no controlador -->
             <input type="file" class="form-control-file" id="file" name="file" required>
         </div>
@@ -23,9 +28,9 @@
             <label for="url">URL do arquivo:</label>
             <input type="text" class="form-control" id="url" th:field="*{url}" name="url">
         </div>
-        
-	    <button type="submit" class="btn btn-primary">Enviar</button>
-	    
+
+        <button type="submit" class="btn btn-primary">Enviar</button>
+
     </form>
 </div>
 </body>

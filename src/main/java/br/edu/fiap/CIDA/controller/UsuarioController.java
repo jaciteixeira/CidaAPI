@@ -1,36 +1,26 @@
 package br.edu.fiap.CIDA.controller;
 
-import br.edu.fiap.CIDA.entity.Arquivo;
+import br.edu.fiap.CIDA.dto.request.UsuarioRequest;
 import br.edu.fiap.CIDA.entity.Auth;
 import br.edu.fiap.CIDA.entity.TipoDocumento;
 import br.edu.fiap.CIDA.entity.Usuario;
-import br.edu.fiap.CIDA.repository.ArquivoRepository;
+import br.edu.fiap.CIDA.repository.AuthRepository;
 import br.edu.fiap.CIDA.repository.UsuarioRepository;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Controller
 public class UsuarioController {
@@ -38,151 +28,139 @@ public class UsuarioController {
     @Autowired
     UsuarioRepository repo;
     @Autowired
-    private ArquivoRepository arquivoRepository;
-    
-    private static final String BASE_FOLDER = "file_server/arquivos_empresas/";
-    private final String ARQUIVO_FOLDER = System.getProperty("user.dir") + "/" + BASE_FOLDER;
+    AuthRepository repoAuth;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping("/")
-    public String index() {
-        return "index"; // Nome do arquivo "index.html" sem a extensão, localizado em "src/main/resources/templates"
+    public ModelAndView index(HttpSession session) {
+        if (session.getAttribute("usuario") != null) {
+            return new ModelAndView("redirect:/home");
+        }
+        return new ModelAndView("index");
     }
 
     @GetMapping("/teste")
     public String retornarPagina() {
-        return "pagina"; // Nome do arquivo "new_user.html" sem a extensão
+        return "pagina";
     }
 
     @GetMapping("/novo_usuario")
-    public ModelAndView novoUsuario() {
+    public ModelAndView retornaViewNewUser(HttpSession session) {
+
+        if (session.getAttribute("usuarioRequest") != null) {
+            return new ModelAndView("redirect:/home");
+        }
 
         ModelAndView mv = new ModelAndView("new_user");
         mv.addObject("tipoDoc", TipoDocumento.values());
-        mv.addObject("usuario", new Usuario());
+        mv.addObject("usuarioRequest", new UsuarioRequest("", "", "", null, ""));
 
         return mv;
     }
+
     @PostMapping("/usuario")
-    public ModelAndView insereUsuario(@Valid Usuario user, BindingResult bindingResult) {
-        // Verifica se existem erros de validação
+    public ModelAndView insereUsuario(@Valid UsuarioRequest userRequest,
+                                      BindingResult bindingResult,
+                                      HttpSession session) {
+
+        String prefix = "cida-container-";
+        String uuidPart = UUID.randomUUID().toString().replaceAll("-", "").toLowerCase();
+
+        String containerName = prefix + uuidPart;
+
+        if (containerName.length() > 63) {
+            containerName = containerName.substring(0, 63);
+        }
+
+        var authUser = Auth.builder()
+                .email(userRequest.email())
+                .hashSenha(passwordEncoder.encode(userRequest.senha()))
+                .ultimoLogin(LocalDateTime.now())
+                .build();
+        var user = Usuario.builder()
+                .authUser(authUser)
+                .telefone(userRequest.telefone())
+                .tipoDoc(userRequest.tipoDoc())
+                .numeroDocumento(userRequest.numeroDocumento())
+                .dataCriacao(LocalDateTime.now())
+                .nomeContainer(containerName)
+                .build();
+
+        if (user.getAuthUser() != null) {
+            Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+            Set<ConstraintViolation<Auth>> authViolations = validator.validate(user.getAuthUser());
+            authViolations.forEach(violation ->
+                    bindingResult.rejectValue("auth_user." + violation.getPropertyPath(), null, violation.getMessage())
+            );
+        }
+
         if (bindingResult.hasErrors()) {
-            // Retorna a página de criação de usuário com os erros
-            return new ModelAndView("new_user");
-        } else {
-            // Cria o objeto de autenticação
-            var auth = Auth.builder()
-                    .email(user.getAuth_user().getEmail())
-                    .hashSenha(user.getAuth_user().getHashSenha())
-                    .ultimoLogin(LocalDateTime.now())
-                    .build();
+            var mv = new ModelAndView("new_user");
+            mv.addObject("tipoDoc", TipoDocumento.values());
+            return mv;
+        }
 
-            // Associa o objeto Auth ao usuário
-            user.setAuth_user(auth);
-            user.setDataCriacao(LocalDateTime.now()); // Define a data de criação como a data atual
-
-            // Salva o usuário
+        try {
             repo.save(user);
-            System.out.println("Direcionando para user_success");
+        } catch (DataIntegrityViolationException e) {
+            String errorMessage = "Erro ao salvar o usuário: " + e.getMostSpecificCause().getMessage();
+            bindingResult.reject("error.usuario", errorMessage);
 
-            var mv = new ModelAndView("user_success");
-            mv.addObject("usuario",user);
-
+            var mv = new ModelAndView("new_user");
+            mv.addObject("tipoDoc", TipoDocumento.values());
             return mv;
         }
+        session.setAttribute("usuario", user);
+
+        return new ModelAndView("redirect:/home");
     }
 
-    @GetMapping("/{id}/enviar_arquivo")
-    public ModelAndView novoArquivo(@PathVariable Long id) {
-        Optional<Usuario> user = repo.findById(id);
 
-        if (user.isPresent()) {
-            Usuario usuario = user.get();
-            var arq = new Arquivo();
-            arq.setUsuario(usuario);
-
-            ModelAndView mv = new ModelAndView("enviar_arquivo");
-            mv.addObject("arquivo", arq);
-            mv.addObject("usuario", usuario);  // Adiciona o usuário ao modelo
-            System.out.println("Id Usuario: " + id);
-            System.out.println(arq);
-            return mv;
-        } else {
-            // Caso o usuário não seja encontrado
-            return new ModelAndView("error").addObject("message", "Usuário não encontrado");
-        }
-    }
-    @Transactional
-    @PostMapping(value = "/{id}/arquivo/upload")
-    public ModelAndView uploadArquivo(@RequestPart("file") MultipartFile file,
-//                                      BindingResult bindingResult,
-                                      @PathVariable("id") Long id,
-                                      @RequestParam String url) {
-        // Obtém o usuário a partir do ID
-        Optional<Usuario> usuarioOptional = repo.findById(id);
-        System.out.println(usuarioOptional);
-        System.out.println(usuarioOptional.isEmpty());
-
-        // Verifica se o usuário existe
-        if (usuarioOptional.isEmpty()) {
-            return new ModelAndView("error").addObject("message", "Usuário não encontrado.");
+    @GetMapping("/home")
+    public ModelAndView transfToHome(HttpSession session) {
+        if (session.getAttribute("usuario") == null) {
+            return new ModelAndView("redirect:/login"); // Redireciona para home se estiver logado
         }
 
-//        // Verifica se há erros de validação
-//        if (bindingResult.hasErrors()) {
-//            return new ModelAndView("enviar_arquivo");
-//        }
+        Usuario user = (Usuario) session.getAttribute("usuario");
 
-        // Obtém a extensão do arquivo
-        String extension = StringUtils.getFilenameExtension(file.getOriginalFilename());
-
-        // Lista de extensões permitidas
-        List<String> textExtensions = Arrays.asList("txt", "doc", "docx", "rtf", "odt", "csv", "tsv", "json", "xml", "yaml", "yml", "java", "py", "js", "html", "css", "md", "ini", "conf", "properties", "pdf", "sql");
-
-        // Verifica se o tipo de conteúdo é texto ou se a extensão está na lista de extensões permitidas
-        if ((file.getContentType() != null && extension != null && textExtensions.contains(extension.toLowerCase()))) {
-            try {
-                // Cria o objeto Arquivo
-                Arquivo arquivo = Arquivo.builder()
-                        .nome(file.getOriginalFilename())
-                        .extensao(extension)
-                        .url(url)
-                        .dataUpload(LocalDateTime.now())
-                        .tamanho(file.getSize())
-                        .usuario(usuarioOptional.get())
-                        .build();
-
-                // Salva o objeto Arquivo no banco de dados
-                arquivoRepository.save(arquivo);
-                
-                Path destination = Paths
-                        .get(ARQUIVO_FOLDER)
-                        .resolve(arquivo.getNome())
-                        .normalize()
-                        .toAbsolutePath();
-                try {
-                    if (!Files.exists(Path.of( ARQUIVO_FOLDER ))) Files.createDirectories(Path.of ( ARQUIVO_FOLDER ));
-                    Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
-                } catch (IOException e) {
-                    System.err.println( "[ IOEXCEPTION ][  ARQUIVO - UPLOAD  ] -  ERRO NO UPLOAD DO ARQUIVO:  " + e.getMessage() );
-//                    log.debug("[ IOEXCEPTION ][  ARQUIVO - UPLOAD  ] -  ERRO NO UPLOAD DO ARQUIVO:  " + e.getMessage());
-                    
-                }
-
-                return new ModelAndView("upload_success").addObject("arquivo", arquivo);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                return new ModelAndView("error").addObject("message", "Erro ao salvar o arquivo.");
-            }
-        } else {
-            return new ModelAndView("error").addObject("message", "Tipo de arquivo não permitido.");
-        }
+        ModelAndView mv = new ModelAndView("home");
+        mv.addObject("user", user);
+        return mv;
     }
 
     @GetMapping("/login")
-    public String login() {
-        return "login"; // nome da página de login (login.html)
+    public ModelAndView loginPage(HttpSession session) {
+        if (session.getAttribute("usuario") != null) {
+            return new ModelAndView("redirect:/home");
+        }
+        return new ModelAndView("login");
     }
 
+
+    @PostMapping("/login")
+    public ModelAndView login(@RequestParam String email, @RequestParam String password, HttpSession session) {
+        boolean isAuthenticated = authenticate(email, password);
+
+        if (isAuthenticated) {
+            Auth authUser = repoAuth.findByEmail(email);
+            Usuario usuario = repo.findByAuthUser(authUser);
+            session.setAttribute("usuario", usuario);
+            return new ModelAndView("redirect:/home");
+        } else {
+            ModelAndView mv = new ModelAndView("login");
+            mv.addObject("error", "Credenciais inválidas");
+            return mv;
+        }
+    }
+
+    public boolean authenticate(String email, String rawPassword) {
+        Auth authUser = repoAuth.findByEmail(email);
+        if (authUser != null) {
+            return passwordEncoder.matches(rawPassword, authUser.getHashSenha());
+        }
+        return false;
+    }
 
 }
