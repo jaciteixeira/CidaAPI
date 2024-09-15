@@ -1,39 +1,33 @@
 package br.edu.fiap.CIDA.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+@Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeRequests()
-                .antMatchers("/public/**").permitAll()  // Permitir acesso público a essas URLs
-                .anyRequest().authenticated()  // Qualquer outra URL requer autenticação
-                .and()
-                .formLogin()
-                .loginPage("/login")  // Definir uma página de login personalizada
-                .defaultSuccessUrl("/home", true) // Redirecionar para /home após login bem-sucedido
-                .permitAll()
-                .and()
-                .logout()
-                .permitAll();
-        return http.build();
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public UserDetailsService userDetailsService() {
-        // Criação de usuários em memória para teste
-        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-        manager.createUser(User.withDefaultPasswordEncoder().username("user").password("password").roles("USER").build());
-        manager.createUser(User.withDefaultPasswordEncoder().username("admin").password("admin").roles("ADMIN").build());
-        return manager;
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .csrf(csrf -> csrf.disable())  // Desabilita CSRF usando a nova API
+                .authorizeHttpRequests(authorizeConfig -> {
+                    authorizeConfig
+                            .requestMatchers("/**").permitAll()  // Permite todos os endpoints
+                            .anyRequest().permitAll();  // Permite qualquer outra requisição
+                })
+//                .formLogin(Customizer.withDefaults())  // Habilita o login padrão (se necessário)
+                .build();
     }
 }
