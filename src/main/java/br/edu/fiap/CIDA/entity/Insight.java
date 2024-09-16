@@ -24,6 +24,7 @@ public class Insight {
     @Column(name = "DATA_GERACAO")
     private LocalDateTime dataGeracao;
 
+    @Lob
     @Column(name = "descricao")
     private String descricao;
 
