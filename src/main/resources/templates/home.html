@@ -49,7 +49,7 @@
 <body th:object="${user}">
 <div class="container">
     <h2 class="text-center">Bem-vindo, <span th:text="*{authUser.email}"></span>!</h2>
-<!--    <h4 class="text-center mt-3">ID do Usuário: <span th:text="*{id}"></span></h4>-->
+    <!--    <h4 class="text-center mt-3">ID do Usuário: <span th:text="*{id}"></span></h4>-->
 
     <div class="text-center mt-5">
         <a th:href="@{/{id}/enviar_arquivo(id=${user.id})}" class="btn btn-primary">
@@ -67,11 +67,11 @@
         </a>
     </div>
 
-<!--    <div class="row">-->
-<!--        <a th:href="@{/}" class="btn btn-secondary">-->
-<!--            Voltar para a Página Inicial-->
-<!--        </a>-->
-<!--    </div>-->
+    <!--    <div class="row">-->
+    <!--        <a th:href="@{/}" class="btn btn-secondary">-->
+    <!--            Voltar para a Página Inicial-->
+    <!--        </a>-->
+    <!--    </div>-->
 </div>
 </body>
 
