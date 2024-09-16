@@ -57,6 +57,15 @@
             margin-top: 20px;
             font-weight: bold;
         }
+        .limited-description {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 400px; /* Ajuste o tamanho conforme necessário */
+            display: inline-block;
+            vertical-align: middle;
+        }
+
     </style>
 </head>
 
@@ -77,12 +86,15 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <tr th:if="${insights.isEmpty()}">
+                        <td colspan="4" class="no-files">Nenhum insight encontrado.</td>
+                    </tr>
+
                     <tr th:each="insight : ${insights}">
                         <td th:text="${insight.dataGeracao}">Nome do Arquivo</td>
-                        <td th:text="${insight.descricao}">Descrição</td>
+                        <td th:text="${insight.descricao}" class="limited-description">Descrição</td>
                         <td>
-<!--                            <a th:href="@{/{idArquivo}/detalhes-arquivo(idArquivo = ${insight.id})}" class="btn btn-link">Detalhes</a>-->
-<!--                            <a th:href="@{/{idArquivo}/remover-arquivo(idArquivo = ${insight.id})}" class="btn btn-link text-danger">Remover</a>-->
+                            <a th:href="@{/{id}/insight/detalhes(id=${insight.id})}" class="btn btn-link">Ver Detalhes</a>
                         </td>
                     </tr>
                 </tbody>
@@ -90,8 +102,8 @@
         </div>
     </div>
 
-    <form method="post" th:action="@{/{id}/analisar(id=${insight.id})}">
-    	<button type="submit" th:href="@{/{id}/analisar(id=${insight.id})}" class="btn btn-primary">Teste</button>
+    <form method="post" th:action="@{/{id}/analisar(id=${id})}">
+    	<button type="submit" th:href="@{/{id}/analisar(id=${id})}" class="btn btn-primary">Gerar</button>
     </form>
 
     <div class="row">

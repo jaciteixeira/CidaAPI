@@ -120,13 +120,21 @@ public class InsightsController {
 
     @GetMapping("/{id}/insights/listar")
     public ModelAndView listarInsights(@PathVariable("id") Long id) {
-
         var user = userRepo.findById(id).get();
 
         var insights = insightRepo.findByUsuario(user);
 
         return new ModelAndView("lista_insights")
                 .addObject("insights", insights);
+    }
+
+    @GetMapping("/{id}/insight/detalhes")
+    public ModelAndView detalhesInsight(@PathVariable("id") Long id){
+        var insight = insightRepo.findById(id);
+        if (insight.isPresent()){
+            return new  ModelAndView("detalhes_insight").addObject("insight",insight.get());
+        }
+        return new ModelAndView("error").addObject("message", "Arquivo não encontrado.");
     }
 
 

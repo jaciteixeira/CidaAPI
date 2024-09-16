@@ -1,0 +1,30 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalhes do Insight</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+<div class="container">
+  <div class="row">
+    <h1>Detalhes do Insight</h1>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <p><strong>Data de Geração:</strong> <span th:text="${insight.dataGeracao}"></span></p>
+      <p><strong>Usuario:</strong> <span th:text="${insight.usuario.authUser.email}"></span></p>
+      <p><strong>Descrição Completa:</strong></p>
+      <p th:text="${insight.descricao}"></p>
+    </div>
+  </div>
+  <div class="row">
+    <a th:href="@{/{id}/insights/listar(id=${insight.usuario.id})}" class="btn btn-link">Voltar a listagem</a>
+  </div>
+</div>
+</body>
+
+</html>

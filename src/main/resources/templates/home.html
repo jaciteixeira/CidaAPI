@@ -24,16 +24,28 @@
             font-size: 2em;
         }
 
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
+        .btn-primary, .btn-danger {
             padding: 10px 20px;
             font-size: 1.1em;
             transition: background-color 0.3s ease;
         }
 
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
         .btn-primary:hover {
             background-color: #0056b3;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
         }
 
         .text-center {
@@ -49,7 +61,6 @@
 <body th:object="${user}">
 <div class="container">
     <h2 class="text-center">Bem-vindo, <span th:text="*{authUser.email}"></span>!</h2>
-    <!--    <h4 class="text-center mt-3">ID do Usuário: <span th:text="*{id}"></span></h4>-->
 
     <div class="text-center mt-5">
         <a th:href="@{/{id}/enviar_arquivo(id=${user.id})}" class="btn btn-primary">
@@ -62,21 +73,30 @@
         </a>
     </div>
     <div class="text-center mt-5">
-        <a th:href="@{/{id}/insights(id=${user.id})}" class="btn btn-primary">
-            Insights
+        <a th:href="@{/{id}/insights/listar(id=${user.id})}" class="btn btn-primary">
+            Lista de Insights Gerados
         </a>
     </div>
     <div class="text-center mt-5">
-        <a th:href="@{/{id}/insights/listar(id=${user.id})}" class="btn btn-primary">
-            Teste Insights
+        <form method="post" th:action="@{/{id}/analisar(id=${user.id})}">
+            <button type="submit" class="btn btn-primary">Gerar Insight</button>
+        </form>
+    </div>
+
+    <!-- Botão de Atualizar Informações -->
+    <div class="text-center mt-5">
+        <a th:href="@{/{id}/atualizar-usuario(id=${user.id})}" class="btn btn-primary">
+            Atualizar Informações do Perfil
         </a>
     </div>
 
-    <!--    <div class="row">-->
-    <!--        <a th:href="@{/}" class="btn btn-secondary">-->
-    <!--            Voltar para a Página Inicial-->
-    <!--        </a>-->
-    <!--    </div>-->
+    <!-- Botão de Excluir Conta -->
+    <div class="text-center mt-5">
+        <form method="post" th:action="@{/{id}/remover-conta(id=${user.id})}"
+              onsubmit="return confirm('Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.');">
+            <button type="submit" class="btn btn-danger">Excluir Conta</button>
+        </form>
+    </div>
 </div>
 </body>
 

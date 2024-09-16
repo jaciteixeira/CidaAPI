@@ -1,0 +1,63 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atualizar Perfil</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+<div th:object="${usuarioRequest}" class="container mt-5">
+  <h2>Atualizar Perfil</h2>
+  <form th:action="@{/{id}/atualizar-usuario(id=${usuario.id})}" method="post">
+    <!-- Campo de Email (Somente Leitura) -->
+    <div class="mb-3">
+      <label for="email" class="form-label">Endereço de Email (não pode ser alterado)</label>
+      <input type="email" class="form-control" id="email" th:field="${usuarioRequest.email}" th:value="${usuario.authUser.email}" readonly>
+      <div class="invalid-feedback" th:errors="${usuarioRequest.email}"></div>
+    </div>
+
+    <!-- Campo de Senha (Somente Leitura) -->
+    <div class="mb-3">
+      <label for="senha" class="form-label">Senha (não pode ser alterada)</label>
+      <input type="password" class="form-control" id="senha" th:field="${usuarioRequest.senha}" th:value="${usuario.authUser.hashSenha}" readonly>
+      <div class="invalid-feedback" th:errors="${usuarioRequest.senha}"></div>
+    </div>
+
+    <div class="mb-3">
+      <label for="telefone" class="form-label">Telefone</label>
+      <input type="text" class="form-control" id="telefone" th:field="*{telefone}" th:errorclass="is-invalid">
+      <div class="invalid-feedback" th:errors="*{telefone}"></div>
+    </div>
+
+    <div class="mb-3">
+      <label for="tipoDoc" class="form-label">Tipo de Documento</label>
+      <select class="form-control" id="tipoDoc" th:field="*{tipoDoc}" th:errorclass="is-invalid">
+        <option value="" selected>Selecione o tipo de documento</option>
+        <option th:each="tipo : ${tipoDoc}" th:value="${tipo}" th:text="${tipo}">Selecione o tipo de documento</option>
+      </select>
+      <div class="invalid-feedback" th:errors="*{tipoDoc}"></div>
+    </div>
+
+    <div class="mb-3">
+      <label for="numeroDocumento" class="form-label">Número do Documento</label>
+      <input type="text" class="form-control" id="numeroDocumento" th:field="*{numeroDocumento}" th:errorclass="is-invalid">
+      <div class="invalid-feedback" th:errors="*{numeroDocumento}"></div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Atualizar</button>
+  </form>
+
+  <div class="row mt-3">
+    <a href="/">Retorne para a página inicial</a>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

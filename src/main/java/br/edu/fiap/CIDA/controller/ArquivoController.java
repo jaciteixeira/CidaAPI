@@ -25,7 +25,7 @@ import java.util.Optional;
 public class ArquivoController {
 
     @Autowired
-    UsuarioRepository UsuarioRepo;
+    UsuarioRepository usuarioRepo;
     @Autowired
     private ArquivoRepository arquivoRepo;
     @Autowired
@@ -53,7 +53,7 @@ public class ArquivoController {
                                       @PathVariable("id") Long id,
                                       @RequestParam String url,
                                       HttpSession session) {
-        Optional<Usuario> usuarioOpt = UsuarioRepo.findById(id);
+        Optional<Usuario> usuarioOpt = usuarioRepo.findById(id);
 
         Usuario user = (Usuario) session.getAttribute("usuario");
 
@@ -99,17 +99,16 @@ public class ArquivoController {
         Usuario user = (Usuario) session.getAttribute("usuario");
         System.out.println(user);
 
-        var userOp = UsuarioRepo.findById(idUsuario);
+        var userOp = usuarioRepo.findById(idUsuario);
 
         if (user != null || userOp.isPresent()) {
             Usuario usuarioEncontrado = userOp.get();
 
             List<Arquivo> arquivos = arquivoRepo.findByUsuario(usuarioEncontrado);
 
-            ModelAndView mv = new ModelAndView("lista_arquivos");
-
-            mv.addObject("arquivos", arquivos);
-            mv.addObject("usuario", usuarioEncontrado);
+            ModelAndView mv = new ModelAndView("lista_arquivos")
+                    .addObject("arquivos", arquivos)
+                    .addObject("usuario", usuarioEncontrado);
 
             return mv;
         }
@@ -173,6 +172,17 @@ public class ArquivoController {
                         .addObject("idUsuario", id);
             }
         }
+    }
+
+    @GetMapping("{id}/remover-arquivo")
+    public ModelAndView removerArquivo(@PathVariable Long id){
+        var arquivoOpt = arquivoRepo.findById(id);
+        if (arquivoOpt.isPresent()){
+            arquivoRepo.deleteById(id);
+//            var user = usuarioRepo.findById(arquivoOpt.get().getUsuario().getId());
+        }
+        return new ModelAndView("redirect:/{id}/arquivos")
+                .addObject("id", arquivoOpt.get().getUsuario().getId());
     }
 
     private boolean verificaFormato(String extension){

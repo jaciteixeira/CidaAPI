@@ -155,6 +155,95 @@ public class UsuarioController {
         }
     }
 
+    @GetMapping("/{id}/atualizar-usuario")
+    public ModelAndView retornaViewatualizaUsuario(@PathVariable Long id,
+                                                   HttpSession session) {
+        Usuario usuario = repo.findById(id).orElse(null);
+
+        if (usuario == null) {
+            return new ModelAndView("redirect:/login");
+        }
+
+        Usuario usuarioSessao = (Usuario) session.getAttribute("usuario");
+        if (usuarioSessao == null || !usuarioSessao.getId().equals(id)) {
+            return new ModelAndView("redirect:/login");
+        }
+
+        ModelAndView mv = new ModelAndView("profile_update")
+                .addObject("tipoDoc", TipoDocumento.values())
+                .addObject("usuario", usuario)
+                .addObject("usuarioRequest", new UsuarioRequest("", "", "", null, ""));
+
+        return mv;
+    }
+
+    @PostMapping("/{id}/atualizar-usuario")
+    public ModelAndView atualizaUsuario(@PathVariable Long id,
+                                        @Valid UsuarioRequest userRequest,
+                                        BindingResult bindingResult,
+                                        HttpSession session) {
+
+        Usuario usuarioAtual = repo.findById(id).orElse(null);
+        System.out.println(userRequest);
+        System.out.println(usuarioAtual);
+        System.out.println(bindingResult);
+
+        if (usuarioAtual == null) {
+            return new ModelAndView("redirect:/login");
+        }
+
+        if (bindingResult.hasErrors()) {
+            ModelAndView mv = new ModelAndView("profile_update")
+                    .addObject("id", id)
+                    .addObject("tipoDoc", TipoDocumento.values())
+                    .addObject("usuario", usuarioAtual);
+            return mv;
+        }
+
+        usuarioAtual.setTelefone(userRequest.telefone());
+        usuarioAtual.setTipoDoc(userRequest.tipoDoc());
+        usuarioAtual.setNumeroDocumento(userRequest.numeroDocumento());
+
+        try {
+            repo.save(usuarioAtual);
+        } catch (DataIntegrityViolationException e) {
+            String errorMessage = "Erro ao atualizar o usuário: " + e.getMostSpecificCause().getMessage();
+            bindingResult.reject("error.usuario", errorMessage);
+
+            ModelAndView mv = new ModelAndView("profile_update")
+                    .addObject("tipoDoc", TipoDocumento.values())
+                    .addObject("usuario", usuarioAtual);
+            return mv;
+        }
+
+        session.setAttribute("usuario", usuarioAtual);
+        return new ModelAndView("redirect:/home");
+    }
+
+
+    @PostMapping("/{id}/remover-conta")
+    public ModelAndView removeUsuario(@PathVariable Long id,
+                                      HttpSession session) {
+
+        Usuario usuarioAtual = (Usuario) session.getAttribute("usuario");
+
+        if (usuarioAtual == null) {
+            return new ModelAndView("redirect:/login");
+        }
+
+        try {
+            repo.delete(usuarioAtual);
+            session.invalidate();
+        } catch (Exception e) {
+            ModelAndView mv = new ModelAndView("home");
+            mv.addObject("error", "Erro ao remover o usuário");
+            return mv;
+        }
+
+        return new ModelAndView("redirect:/");
+    }
+
+
     public boolean authenticate(String email, String rawPassword) {
         Auth authUser = repoAuth.findByEmail(email);
         if (authUser != null) {
