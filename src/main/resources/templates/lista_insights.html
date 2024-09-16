@@ -1,0 +1,103 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arquivos</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f4f7f6;
+        }
+
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            margin-top: 50px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #343a40;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #6c757d;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .table thead th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .no-files {
+            text-align: center;
+            font-style: italic;
+            color: #6c757d;
+        }
+
+        .btn-link {
+            color: #007bff;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+
+        .row a {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <div class="row">
+        <h1>Insights</h1>
+    </div>
+    <div class="row">
+        <div class="col-12">
+           
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Data de Upload</th>
+                        <th scope="col">Descrição</th>
+                        <th scope="col">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="insight : ${insights}">
+                        <td th:text="${insight.dataGeracao}">Nome do Arquivo</td>
+                        <td th:text="${insight.descricao}">Descrição</td>
+                        <td>
+<!--                            <a th:href="@{/{idArquivo}/detalhes-arquivo(idArquivo = ${insight.id})}" class="btn btn-link">Detalhes</a>-->
+<!--                            <a th:href="@{/{idArquivo}/remover-arquivo(idArquivo = ${insight.id})}" class="btn btn-link text-danger">Remover</a>-->
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <form method="post" th:action="@{/{id}/analisar(id=${insight.id})}">
+    	<button type="submit" th:href="@{/{id}/analisar(id=${insight.id})}" class="btn btn-primary">Teste</button>
+    </form>
+
+    <div class="row">
+        <a href="/home" class="btn btn-link">Retorne para a home</a>
+    </div>
+</div>
+</body>
+
+</html>
