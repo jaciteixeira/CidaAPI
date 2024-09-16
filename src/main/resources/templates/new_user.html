@@ -40,6 +40,19 @@
         <div class="invalid-feedback" th:errors="*{numeroDocumento}"></div>
         <button type="submit" class="btn btn-primary">Cadastrar</button>
     </form>
+
+    <div class="row">
+        <span>
+            Já tem conta?
+            <a th:href="@{/login}">
+                Login
+            </a>
+        </span>
+    </div>
+
+    <div class="row">
+        <a href="/">Retorne para a página inicial</a>
+    </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

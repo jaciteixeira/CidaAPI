@@ -6,38 +6,106 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arquivos</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f4f7f6;
+        }
+
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            margin-top: 50px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #343a40;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #6c757d;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .table thead th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .no-files {
+            text-align: center;
+            font-style: italic;
+            color: #6c757d;
+        }
+
+        .btn-link {
+            color: #007bff;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+
+        .row a {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
 </head>
-<body >
+
+<body>
+<div class="container">
     <div class="row">
-<!--        <h1 th:text="${usuario.auth_user.email}">Lista de Arquivos Usuario:  </h1>-->
+        <h1>Arquivos</h1>
     </div>
     <div class="row">
-        <div class="col-15">
+        <div class="col-12">
+            <p>Abaixo está a lista de arquivos relacionados ao usuário: <span th:text="${usuario.authUser.email}"></span>.</p>
+
             <table class="table table-hover">
                 <thead>
                 <tr>
-                    <th scope="col">Nome</th>
-                    <th scope="col">Extensao</th>
+                    <th scope="col">Nome do Arquivo</th>
+                    <th scope="col">Data de Upload</th>
                     <th scope="col">Tamanho</th>
-                    <th scope="col">Data Upload</th>
-                    <th scope="col">#</th>
-                    <th scope="col">#</th>
-                    <th scope="col">#</th>
+                    <th scope="col">Ações</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="item : ${arquivos}">
-                    <th class="col-3" scope="row" th:text="${item.nome}">A</th>
-                    <td class="col-3" th:text="${item.extensao}">B</td>
-                    <td class="col-3" th:text="${item.tamanho}">C</td>
-                    <td class="col-3" th:text="${item.dataUpload}">D</td>
-                    <td class="col-3"><a th:href="@{/detalhes_discente/{idUsuario}(idUsuario = ${item.usuario.id})}" th:text="">Detalhes</a></td>
-                    <td class="col-3"><a th:href="@{/atualiza_discente/{idUsuario}(idUsuario = ${item.usuario.id})}" th:text="">Atualizar</a></td>
-                    <td class="col-3"><a th:href="@{/remove_discente/{idUsuario}(idUsuario = ${item.usuario.id})}" th:text="">Remover</a></td>
+                <tr th:if="${arquivos.isEmpty()}">
+                    <td colspan="4" class="no-files">Nenhum arquivo encontrado.</td>
+                </tr>
+
+                <tr th:each="arquivo : ${arquivos}">
+                    <td th:text="${arquivo.nome}">Nome do Arquivo</td>
+                    <td th:text="${arquivo.dataUpload}">Data de Upload</td>
+                    <td th:text="${arquivo.tamanho} + ' MB'">Tamanho</td>
+                    <td>
+                        <a th:href="@{/{idArquivo}/detalhes-arquivo(idArquivo = ${arquivo.id})}" class="btn btn-link">Detalhes</a>
+                        <a th:href="@{/{idArquivo}/atualizar-arquivo(idArquivo = ${arquivo.id})}" class="btn btn-link text-warning">Atualizar</a>
+                        <a th:href="@{/{idArquivo}/remover-arquivo(idArquivo = ${arquivo.id})}" class="btn btn-link text-danger">Remover</a>
+                    </td>
                 </tr>
                 </tbody>
             </table>
         </div>
     </div>
+
+    <div class="row">
+        <a th:href="@{/{id}/enviar_arquivo(id=${usuario.id})}" class="btn btn-primary">Adicionar Arquivo</a>
+    </div>
+
+    <div class="row">
+        <a href="/home" class="btn btn-link">Retorne para a home</a>
+    </div>
+</div>
 </body>
+
 </html>

@@ -1,28 +1,78 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página Inicial</title>
-    <!-- Adiciona o CSS do Bootstrap para estilização -->
+    <title>Página Inicial - CIDA</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            color: #343a40;
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            color: #495057;
+            font-size: 1.75em;
+        }
+
+        h5 {
+            color: #6c757d;
+            line-height: 1.6;
+            margin-top: 15px;
+        }
+
+        p {
+            font-size: 1.2em;
+            color: #495057;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            font-size: 1.1em;
+            padding: 10px 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
+
 <body>
-<!-- Container principal para centralizar o conteúdo -->
 <div class="container mt-5">
-    <h1 class="text-center">Bem-vindo CIDA</h1>
-    <h3>Oque é a CIDA?</h3>
+    <h1 class="text-center">Bem-vindo à CIDA</h1>
+    <h3>O que é a CIDA?</h3>
     <h5>
         A Consulting Insights API integra sistemas empresariais à IA Consulting Insights with Deep Analysis (CIDA), processando dados brutos para gerar insights. Oferece upload de documentos, análise de dados e segurança, permitindo decisões informadas em empresas.
     </h5>
     <p class="text-center">Insights de forma fácil e eficiente.</p>
+
     <div class="text-center mt-4">
         <a href="/novo_usuario" class="btn btn-primary">Cadastrar Novo Usuário</a>
     </div>
     <div class="text-center mt-4">
         <a href="/login" class="btn btn-primary">Login</a>
     </div>
+    <a href="/1/arquivos">Teste listagem arquivos</a>
 </div>
-
 </body>
+
 </html>

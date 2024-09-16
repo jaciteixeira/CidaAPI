@@ -1,0 +1,93 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enviar Arquivo</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 50px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #343a40;
+        }
+        .detail-item {
+            font-weight: bold;
+        }
+        .btn-link {
+            color: #007bff;
+        }
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <h2>Detalhes do Arquivo</h2>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <p class="detail-item">Nome do Arquivo:</p>
+            <p th:text="${arquivo.nome}">Nome do Arquivo</p>
+        </div>
+        <div class="col-md-6">
+            <p class="detail-item">Data de Upload:</p>
+            <p th:text="${arquivo.dataUpload}">Data de Upload</p>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <p class="detail-item">Extensão:</p>
+            <p th:text="${arquivo.extensao}">Data de Upload</p>
+        </div>
+        <div class="col-md-6">
+            <p class="detail-item">Tamanho:</p>
+            <p th:text="${arquivo.tamanho} + ' MB'">Tamanho</p>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <div class="col-md-6">
+            <p class="detail-item">URL do Arquivo:</p>
+            <p>
+                <a th:href="${arquivo.url}" class="btn-link" target="_blank" th:text="${arquivo.url}">Link do Arquivo</a>
+            </p>
+        </div>
+        <div class="col-md-6">
+            <p class="detail-item">Insights:
+                <a th:href="@{/{id}/insights(id=${arquivo.usuario.id})}"
+                   class="btn-link"
+                   target="_blank"
+                >
+                    Lista Insights
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <a th:href="@{/{id}/arquivos(id=${arquivo.usuario.id})}" class="btn btn-secondary">Voltar para a lista de arquivos</a>
+            <a th:href="@{/{idArquivo}/atualizar-arquivo(idArquivo=${arquivo.id})}" class="btn btn-info">Atualizar</a>
+            <a th:href="@{/{idArquivo}/remover-arquivo(idArquivo=${arquivo.id})}" class="btn btn-danger">Remover</a>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubqvO3U8eJNttM7am8R2YlOjo5hdqtv7yoIHLkE4Twp0P4p" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-pzjw8f+ua7Kw1TIqZrCmbxk5K4pHf5v5a2m+9KPZDZlu3M5eGJl9Gp5dAl0Ls6jf" crossorigin="anonymous"></script>
+</body>
+</html>

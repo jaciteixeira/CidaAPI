@@ -4,17 +4,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>Home do Usuário</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            margin-top: 50px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #343a40;
+            font-size: 2em;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            padding: 10px 20px;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .text-center {
+            margin-top: 30px;
+        }
+
+        a {
+            text-decoration: none;
+        }
+    </style>
 </head>
+
 <body th:object="${user}">
-<div class="container mt-5">
-    <h2>Home do Usuario</h2>
-    <h2 th:text="*{id}"></h2>
-    <!-- <button type="submit" class="btn btn-primary">Enviar</button> -->
-    <div class="text-center mt-4">
-        <a th:href="@{/{id}/enviar_arquivo(id=${user.id})}" class="btn btn-primary">Adicionar Arquivo</a>
+<div class="container">
+    <h2 class="text-center">Bem-vindo, <span th:text="*{authUser.email}"></span>!</h2>
+<!--    <h4 class="text-center mt-3">ID do Usuário: <span th:text="*{id}"></span></h4>-->
+
+    <div class="text-center mt-5">
+        <a th:href="@{/{id}/enviar_arquivo(id=${user.id})}" class="btn btn-primary">
+            Adicionar Arquivo
+        </a>
     </div>
+    <div class="text-center mt-5">
+        <a th:href="@{/{id}/arquivos(id=${user.id})}" class="btn btn-primary">
+            Lista dos Arquivos Cadastrados
+        </a>
+    </div>
+    <div class="text-center mt-5">
+        <a th:href="@{/{id}/insights(id=${user.id})}" class="btn btn-primary">
+            Insights
+        </a>
+    </div>
+
+<!--    <div class="row">-->
+<!--        <a th:href="@{/}" class="btn btn-secondary">-->
+<!--            Voltar para a Página Inicial-->
+<!--        </a>-->
+<!--    </div>-->
 </div>
 </body>
+
 </html>

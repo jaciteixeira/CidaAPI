@@ -6,10 +6,12 @@ import br.edu.fiap.CIDA.repository.ArquivoRepository;
 import br.edu.fiap.CIDA.repository.UsuarioRepository;
 import br.edu.fiap.CIDA.service.AzureBlobService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
@@ -18,7 +20,6 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Controller
 public class ArquivoController {
@@ -62,14 +63,14 @@ public class ArquivoController {
 
         String extension = StringUtils.getFilenameExtension(file.getOriginalFilename());
 
-        List<String> textExtensions = Arrays.asList("txt", "doc", "docx", "rtf", "csv", "xml", "pdf");
+//        List<String> textExtensions = Arrays.asList("txt", "doc", "docx", "rtf", "csv", "xml", "pdf");
 
-        if ((file.getContentType() != null && extension != null && textExtensions.contains(extension.toLowerCase()))) {
+        if ((file.getContentType() != null && verificaFormato(extension))) {
             try {
                 Arquivo arquivo = Arquivo.builder()
-                        .nome(file.getOriginalFilename()+ "-" + UUID.randomUUID().toString())
+                        .nome(file.getOriginalFilename())
                         .extensao(extension)
-                        .url(user.getNomeContainer())
+                        .url(url)
                         .dataUpload(LocalDateTime.now())
                         .tamanho(file.getSize())
                         .usuario(usuarioOpt.get())
@@ -80,8 +81,9 @@ public class ArquivoController {
 
                 arquivoRepo.save(arquivo);
 
-                return new ModelAndView("redirect: /1/arquivos").addObject("usuario", user);
-
+                return new ModelAndView("redirect:/{id}/arquivos")
+                        .addObject("idUsuario", id)
+                        .addObject("usuario", usuarioOpt);
             } catch (Exception e) {
                 e.printStackTrace();
                 return new ModelAndView("error").addObject("message", "Erro ao salvar o arquivo.");
@@ -93,33 +95,90 @@ public class ArquivoController {
 
     @GetMapping("/{idUsuario}/arquivos")
     public ModelAndView listarArquivos(@PathVariable("idUsuario") Long idUsuario, HttpSession session) {
-        // Recupera o usuário da sessão
+        System.out.println(idUsuario);
         Usuario user = (Usuario) session.getAttribute("usuario");
+        System.out.println(user);
 
-        // Procura o usuário no repositório
         var userOp = UsuarioRepo.findById(idUsuario);
 
-        // Verifica se o usuário da sessão não é nulo e o usuário com o id existe no banco de dados
         if (user != null || userOp.isPresent()) {
-            // Obtém o objeto Usuario do Optional
             Usuario usuarioEncontrado = userOp.get();
 
-            // Busca os arquivos relacionados ao usuário encontrado
             List<Arquivo> arquivos = arquivoRepo.findByUsuario(usuarioEncontrado);
 
-            // Cria o ModelAndView para renderizar a página
             ModelAndView mv = new ModelAndView("lista_arquivos");
 
-            // Adiciona a lista de arquivos e o usuário ao modelo
             mv.addObject("arquivos", arquivos);
             mv.addObject("usuario", usuarioEncontrado);
 
-            System.out.println(arquivos);  // Apenas para debug
             return mv;
         }
 
-        // Se o usuário não estiver presente ou não for encontrado, retorna a página de erro
         return new ModelAndView("error");
     }
+
+    @GetMapping("/{id}/detalhes-arquivo")
+    public ModelAndView detalhesArquivo(@PathVariable("id") Long id){
+
+        var arquivo = arquivoRepo.findById(id);
+        if (arquivo.isPresent()){
+            return new  ModelAndView("detalhes_arquivo").addObject("arquivo",arquivo.get());
+        }
+        return new ModelAndView("error").addObject("message", "Arquivo não encontrado.");
+    }
+
+    @GetMapping("{id}/atualizar-arquivo")
+    public ModelAndView retornaAtualizarArquivo(@PathVariable("id") Long id){
+        var arquivo = arquivoRepo.findById(id).get();
+        System.out.println(arquivo);
+        return new ModelAndView("atualizar_arquivo")
+                .addObject("arquivo", arquivo);
+    }
+
+    @PostMapping("{id}/atualizar-arquivo")
+    public ModelAndView atualizarArquivo(@PathVariable("id") Long id,
+                                         MultipartFile file,
+                                         @Valid Arquivo arquivoRecebido,
+                                         BindingResult result){
+
+        var arquivoOpt = arquivoRepo.findById(id);
+
+        if(result.hasErrors()) {
+            ModelAndView mv = new ModelAndView("atualiza_arquivo");
+            mv.addObject("id", id);
+            mv.addObject("arquivo", arquivoOpt);
+            return mv;
+        }else {
+            String extension = StringUtils.getFilenameExtension(file.getOriginalFilename());
+            var arquivo = arquivoOpt.get();
+            if (arquivoOpt.isPresent() && verificaFormato(extension)){
+                try {
+                    arquivo.setNome(file.getOriginalFilename());
+                    arquivo.setTamanho(file.getSize());
+                    arquivo.setExtensao(StringUtils.getFilenameExtension(file.getOriginalFilename()));
+                    arquivo.setDataUpload(LocalDateTime.now());
+                    arquivo.setUrl(arquivoRecebido.getUrl());
+                    azureBlobService.uploadFile(file, arquivo.getUsuario().getNomeContainer());
+                    arquivoRepo.save(arquivo);
+
+                    return new ModelAndView("redirect:/{idUsuario}/arquivos")
+                            .addObject("idUsuario", id);
+                }catch (RuntimeException e){
+                    return new ModelAndView("error").addObject("message", "Erro ao atualizar o arquivo.");
+                }
+            }
+            else {
+                result.rejectValue("error", null, "Tipo de arquivo não permitido.");
+                return new ModelAndView("redirect:/{id}/atualizar-arquivo")
+                        .addObject("idUsuario", id);
+            }
+        }
+    }
+
+    private boolean verificaFormato(String extension){
+        List<String> textExtensions = Arrays.asList("txt", "doc", "docx", "rtf", "csv", "xml", "pdf");
+        return extension != null && textExtensions.contains(extension.toLowerCase());
+    }
+
 
 }

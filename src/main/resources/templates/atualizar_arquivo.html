@@ -1,0 +1,69 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atualizar</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f4f7f6;
+    }
+
+    .container {
+      background-color: white;
+      padding: 40px;
+      border-radius: 10px;
+      margin-top: 50px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="row">
+    <h1>Arquivos</h1>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <form method="post" th:action="@{/{id}/atualizar-arquivo(id=${arquivo.id})}" enctype="multipart/form-data">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Nome do Arquivo</th>
+              <th scope="col">Novo Arquivo</th>
+              <th scope="col">URL</th>
+            </tr>
+          </thead>
+          <tbody>
+  <!--        <tr th:if="${arquivo.isEmpty()}">-->
+  <!--          <td colspan="4" class="no-files">Nenhum arquivo encontrado.</td>-->
+  <!--        </tr>-->
+
+            <tr>
+              <td th:text="${arquivo.nome}">Nome do Arquivo</td>
+                <td>
+                  <label for="file">Escolha o arquivo:</label>
+                  <input type="file" class="form-control-file" id="file" name="file" required>
+                </td>
+                <td>
+                  <label for="url">URL do arquivo (opcional):</label>
+                  <input type="text" class="form-control" id="url" th:field="${arquivo.url}" name="url" placeholder="Insira a URL do arquivo">
+                </td>
+
+            </tr>
+          </tbody>
+        </table>
+        <button type="submit" th:href="@{/{id}/atualizar-arquivo(id=${arquivo.id})}" class="btn btn-primary">Atualizar Arquivo</button>
+      </form>
+    </div>
+  </div>
+
+
+  <div class="row">
+    <a href="/home" class="btn btn-link">Retorne para a home</a>
+  </div>
+</div>
+</body>
+</html>
