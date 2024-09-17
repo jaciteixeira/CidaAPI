@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -24,13 +26,11 @@ public class Usuario {
     @Column(name = "ID_USUARIO")
     private Long id;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE})
     @JoinColumn(
-            name = "id_auth ",
-            referencedColumnName = "id_auth " ,
-            foreignKey = @ForeignKey(
-                    name = "FK_USUARIO_AUTH"
-            )
+            name = "id_auth",
+            referencedColumnName = "id_auth",
+            foreignKey = @ForeignKey(name = "FK_USUARIO_AUTH")
     )
     private Auth authUser;
 
@@ -53,4 +53,6 @@ public class Usuario {
     @Column(name = "NOME_CONTAINER")
     private String nomeContainer;
 
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Arquivo> arquivos = new HashSet<>();
 }

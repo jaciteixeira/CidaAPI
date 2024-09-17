@@ -1,9 +1,11 @@
 package br.edu.fiap.CIDA.controller;
 
 import br.edu.fiap.CIDA.dto.request.UsuarioRequest;
+import br.edu.fiap.CIDA.entity.Arquivo;
 import br.edu.fiap.CIDA.entity.Auth;
 import br.edu.fiap.CIDA.entity.TipoDocumento;
 import br.edu.fiap.CIDA.entity.Usuario;
+import br.edu.fiap.CIDA.repository.ArquivoRepository;
 import br.edu.fiap.CIDA.repository.AuthRepository;
 import br.edu.fiap.CIDA.repository.UsuarioRepository;
 import jakarta.servlet.http.HttpSession;
@@ -29,6 +31,8 @@ public class UsuarioController {
     UsuarioRepository repo;
     @Autowired
     AuthRepository repoAuth;
+    @Autowired
+    ArquivoRepository arquivoRepo;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -147,6 +151,8 @@ public class UsuarioController {
             Auth authUser = repoAuth.findByEmail(email);
             Usuario usuario = repo.findByAuthUser(authUser);
             session.setAttribute("usuario", usuario);
+            usuario.getAuthUser().setUltimoLogin(LocalDateTime.now());
+            repo.save(usuario);
             return new ModelAndView("redirect:/home");
         } else {
             ModelAndView mv = new ModelAndView("login");
@@ -160,9 +166,9 @@ public class UsuarioController {
                                                    HttpSession session) {
         Usuario usuario = repo.findById(id).orElse(null);
 
-        if (usuario == null) {
-            return new ModelAndView("redirect:/login");
-        }
+//        if (usuario == null) {
+//            return new ModelAndView("redirect:/login");
+//        }
 
         Usuario usuarioSessao = (Usuario) session.getAttribute("usuario");
         if (usuarioSessao == null || !usuarioSessao.getId().equals(id)) {
@@ -177,9 +183,10 @@ public class UsuarioController {
         return mv;
     }
 
+
     @PostMapping("/{id}/atualizar-usuario")
     public ModelAndView atualizaUsuario(@PathVariable Long id,
-                                        @Valid UsuarioRequest userRequest,
+                                        UsuarioRequest userRequest,
                                         BindingResult bindingResult,
                                         HttpSession session) {
 
@@ -188,9 +195,9 @@ public class UsuarioController {
         System.out.println(usuarioAtual);
         System.out.println(bindingResult);
 
-        if (usuarioAtual == null) {
-            return new ModelAndView("redirect:/login");
-        }
+//        if (usuarioAtual == null) {
+//            return new ModelAndView("redirect:/login");
+//        }
 
         if (bindingResult.hasErrors()) {
             ModelAndView mv = new ModelAndView("profile_update")
@@ -232,10 +239,10 @@ public class UsuarioController {
         }
 
         try {
-            repo.delete(usuarioAtual);
+            repo.deleteById(id);
             session.invalidate();
         } catch (Exception e) {
-            ModelAndView mv = new ModelAndView("home");
+            ModelAndView mv = new ModelAndView("index");
             mv.addObject("error", "Erro ao remover o usuário");
             return mv;
         }

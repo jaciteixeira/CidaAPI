@@ -5,6 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+            max-width: 500px;
+        }
+
+        h2 {
+            color: #343a40;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 10px;
+            font-size: 1.1em;
+        }
+
+        .alert {
+            margin-top: 20px;
+        }
+
+        .row {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
 <div class="container mt-5">
@@ -12,14 +57,13 @@
     <form th:action="@{/login}" method="post">
         <div class="form-group">
             <label for="email">Email</label>
-            <input type="text" id="email" name="email" class="form-control" required>
+            <input type="text" id="email" name="email" class="form-control" placeholder="Digite seu email" required>
         </div>
         <div class="form-group">
             <label for="password">Senha</label>
-            <input type="password" id="password" name="password" class="form-control" required>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Digite sua senha" required>
         </div>
         <button type="submit" class="btn btn-primary">Entrar</button>
-        <!-- Botão de Registrar -->
 
         <div th:if="${error}" class="alert alert-danger mt-3" role="alert">
             <span th:text="${error}"></span>
@@ -27,12 +71,13 @@
     </form>
 
     <div class="row">
-        <span>Não tem conta? <a href="/novo_usuario" >Registrar</a></span>
+        <span>Não tem conta? <a href="/novo_usuario">Registrar</a></span>
     </div>
     <div class="row">
         <a href="/">Retorne para a página inicial</a>
     </div>
 </div>
+
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

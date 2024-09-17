@@ -5,6 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastrar Usuário</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+            max-width: 600px;
+        }
+
+        h2 {
+            color: #343a40;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 10px;
+            font-size: 1.1em;
+        }
+
+        .form-label {
+            font-weight: bold;
+        }
+
+        .invalid-feedback {
+            display: block;
+        }
+
+        .row {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        select {
+            font-size: 1em;
+        }
+    </style>
 </head>
 <body>
 <div class="container mt-5">
@@ -12,44 +65,38 @@
     <form th:object="${usuarioRequest}" action="/usuario" method="post">
         <div class="mb-3">
             <label for="email" class="form-label">Endereço de Email</label>
-            <input type="email" class="form-control" id="email" th:field="*{email}" th:errorclass="is-invalid">
+            <input type="email" class="form-control" id="email" th:field="*{email}" th:errorclass="is-invalid" placeholder="Digite seu email">
             <div class="invalid-feedback" th:errors="*{email}"></div>
         </div>
         <div class="mb-3">
             <label for="senha" class="form-label">Senha</label>
-            <input type="password" class="form-control" id="senha" th:field="*{senha}" th:errorclass="is-invalid">
+            <input type="password" class="form-control" id="senha" th:field="*{senha}" th:errorclass="is-invalid" placeholder="Digite sua senha">
             <div class="invalid-feedback" th:errors="*{senha}"></div>
         </div>
         <div class="mb-3">
             <label for="telefone" class="form-label">Telefone</label>
-            <input type="text" class="form-control" id="telefone" th:field="*{telefone}" th:errorclass="is-invalid">
+            <input type="text" class="form-control" id="telefone" th:field="*{telefone}" th:errorclass="is-invalid" placeholder="Digite seu telefone">
             <div class="invalid-feedback" th:errors="*{telefone}"></div>
         </div>
         <div class="mb-3">
             <label for="tipoDoc" class="form-label">Tipo de Documento</label>
             <select class="form-control" id="tipoDoc" th:field="*{tipoDoc}" th:errorclass="is-invalid">
-                <option value="" selected >Selecione o tipo de documento</option>
-                <option th:each="tipo : ${tipoDoc}" th:value="${tipo}" th:text="${tipo}">Selecione o tipo de documento </option>
+                <option value="" selected>Selecione o tipo de documento</option>
+                <option th:each="tipo : ${tipoDoc}" th:value="${tipo}" th:text="${tipo}">Selecione o tipo de documento</option>
             </select>
             <div class="invalid-feedback" th:errors="*{tipoDoc}"></div>
         </div>
         <div class="mb-3">
             <label for="numeroDocumento" class="form-label">Número do Documento</label>
-            <input type="text" class="form-control" id="numeroDocumento" th:field="*{numeroDocumento}" th:errorclass="is-invalid">
+            <input type="text" class="form-control" id="numeroDocumento" th:field="*{numeroDocumento}" th:errorclass="is-invalid" placeholder="Digite o número do documento">
+            <div class="invalid-feedback" th:errors="*{numeroDocumento}"></div>
         </div>
-        <div class="invalid-feedback" th:errors="*{numeroDocumento}"></div>
         <button type="submit" class="btn btn-primary">Cadastrar</button>
     </form>
 
     <div class="row">
-        <span>
-            Já tem conta?
-            <a th:href="@{/login}">
-                Login
-            </a>
-        </span>
+        <span>Já tem conta? <a th:href="@{/login}">Login</a></span>
     </div>
-
     <div class="row">
         <a href="/">Retorne para a página inicial</a>
     </div>

@@ -13,7 +13,6 @@ azure:
   storage:
     account-name: ""
     account-key: ""
-    container-name: ""
     connection-string: ""
 
 #springdoc:

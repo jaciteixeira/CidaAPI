@@ -24,7 +24,12 @@
             font-size: 2em;
         }
 
-        .btn-primary, .btn-danger {
+        p {
+            font-size: 1.1em;
+            color: #495057;
+        }
+
+        .btn-primary, .btn-danger, .btn-secondary {
             padding: 10px 20px;
             font-size: 1.1em;
             transition: background-color 0.3s ease;
@@ -48,12 +53,33 @@
             background-color: #c82333;
         }
 
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
         .text-center {
             margin-top: 30px;
         }
 
         a {
             text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .mt-5 {
+            margin-top: 3rem !important;
+        }
+
+        .text-muted {
+            color: #6c757d !important;
         }
     </style>
 </head>
@@ -62,28 +88,40 @@
 <div class="container">
     <h2 class="text-center">Bem-vindo, <span th:text="*{authUser.email}"></span>!</h2>
 
+    <p><strong>Telefone:</strong> <span th:text="*{telefone}"></span></p>
+    <p><strong>Data Criação da Conta:</strong> <span th:text="*{dataCriacao}"></span></p>
+    <p><strong>Último Login:</strong> <span th:text="*{authUser.ultimoLogin}"></span></p>
+    <p><strong>Container:</strong> <span th:text="*{nomeContainer}"></span></p>
+
+    <!-- Botão para Adicionar Arquivo -->
     <div class="text-center mt-5">
         <a th:href="@{/{id}/enviar_arquivo(id=${user.id})}" class="btn btn-primary">
             Adicionar Arquivo
         </a>
     </div>
+
+    <!-- Botão para Listar Arquivos Cadastrados -->
     <div class="text-center mt-5">
         <a th:href="@{/{id}/arquivos(id=${user.id})}" class="btn btn-primary">
             Lista dos Arquivos Cadastrados
         </a>
     </div>
+
+    <!-- Botão para Listar Insights Gerados -->
     <div class="text-center mt-5">
         <a th:href="@{/{id}/insights/listar(id=${user.id})}" class="btn btn-primary">
             Lista de Insights Gerados
         </a>
     </div>
+
+    <!-- Botão para Gerar Insight -->
     <div class="text-center mt-5">
         <form method="post" th:action="@{/{id}/analisar(id=${user.id})}">
             <button type="submit" class="btn btn-primary">Gerar Insight</button>
         </form>
     </div>
 
-    <!-- Botão de Atualizar Informações -->
+    <!-- Botão para Atualizar Informações do Perfil -->
     <div class="text-center mt-5">
         <a th:href="@{/{id}/atualizar-usuario(id=${user.id})}" class="btn btn-primary">
             Atualizar Informações do Perfil
@@ -95,6 +133,13 @@
         <form method="post" th:action="@{/{id}/remover-conta(id=${user.id})}"
               onsubmit="return confirm('Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.');">
             <button type="submit" class="btn btn-danger">Excluir Conta</button>
+        </form>
+    </div>
+
+    <!-- Botão de Logout -->
+    <div class="text-center mt-5">
+        <form method="post" th:action="@{/logout}">
+            <button type="submit" class="btn btn-secondary">Logout</button>
         </form>
     </div>
 </div>

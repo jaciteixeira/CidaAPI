@@ -39,9 +39,7 @@ public class ArquivoController {
             var arquivo = new Arquivo();
             arquivo.setUsuario(user);
 
-            ModelAndView mv = new ModelAndView("enviar_arquivo");
-            mv.addObject("arquivo", arquivo);
-            return mv;
+            return new ModelAndView("enviar_arquivo").addObject("arquivo", arquivo);
         } else {
             return new ModelAndView("error").addObject("message", "Usuário não encontrado");
         }
@@ -54,7 +52,6 @@ public class ArquivoController {
                                       @RequestParam String url,
                                       HttpSession session) {
         Optional<Usuario> usuarioOpt = usuarioRepo.findById(id);
-
         Usuario user = (Usuario) session.getAttribute("usuario");
 
         if (user == null) {
@@ -63,9 +60,7 @@ public class ArquivoController {
 
         String extension = StringUtils.getFilenameExtension(file.getOriginalFilename());
 
-//        List<String> textExtensions = Arrays.asList("txt", "doc", "docx", "rtf", "csv", "xml", "pdf");
-
-        if ((file.getContentType() != null && verificaFormato(extension))) {
+        if (file.getContentType() != null && verificaFormato(extension)) {
             try {
                 Arquivo arquivo = Arquivo.builder()
                         .nome(file.getOriginalFilename())
@@ -73,12 +68,10 @@ public class ArquivoController {
                         .url(url)
                         .dataUpload(LocalDateTime.now())
                         .tamanho(file.getSize())
-                        .usuario(usuarioOpt.get())
+                        .usuario(usuarioOpt.orElse(null))
                         .build();
 
-
                 azureBlobService.uploadFile(file, user.getNomeContainer());
-
                 arquivoRepo.save(arquivo);
 
                 return new ModelAndView("redirect:/{id}/arquivos")
@@ -95,100 +88,98 @@ public class ArquivoController {
 
     @GetMapping("/{idUsuario}/arquivos")
     public ModelAndView listarArquivos(@PathVariable("idUsuario") Long idUsuario, HttpSession session) {
-        System.out.println(idUsuario);
         Usuario user = (Usuario) session.getAttribute("usuario");
-        System.out.println(user);
 
-        var userOp = usuarioRepo.findById(idUsuario);
+        if (user != null) {
+            Optional<Usuario> userOp = usuarioRepo.findById(idUsuario);
 
-        if (user != null || userOp.isPresent()) {
-            Usuario usuarioEncontrado = userOp.get();
+            if (userOp.isPresent()) {
+                Usuario usuarioEncontrado = userOp.get();
+                List<Arquivo> arquivos = arquivoRepo.findByUsuario(usuarioEncontrado);
 
-            List<Arquivo> arquivos = arquivoRepo.findByUsuario(usuarioEncontrado);
-
-            ModelAndView mv = new ModelAndView("lista_arquivos")
-                    .addObject("arquivos", arquivos)
-                    .addObject("usuario", usuarioEncontrado);
-
-            return mv;
+                return new ModelAndView("lista_arquivos")
+                        .addObject("arquivos", arquivos)
+                        .addObject("usuario", usuarioEncontrado);
+            }
         }
-
-        return new ModelAndView("error");
+        return new ModelAndView("error").addObject("message", "Usuário não encontrado.");
     }
 
     @GetMapping("/{id}/detalhes-arquivo")
-    public ModelAndView detalhesArquivo(@PathVariable("id") Long id){
+    public ModelAndView detalhesArquivo(@PathVariable("id") Long id) {
+        Optional<Arquivo> arquivo = arquivoRepo.findById(id);
 
-        var arquivo = arquivoRepo.findById(id);
-        if (arquivo.isPresent()){
-            return new  ModelAndView("detalhes_arquivo").addObject("arquivo",arquivo.get());
-        }
-        return new ModelAndView("error").addObject("message", "Arquivo não encontrado.");
+        return arquivo.map(arquivoFound -> new ModelAndView("detalhes_arquivo").addObject("arquivo", arquivoFound))
+                .orElseGet(() -> new ModelAndView("error").addObject("message", "Arquivo não encontrado."));
     }
 
     @GetMapping("{id}/atualizar-arquivo")
-    public ModelAndView retornaAtualizarArquivo(@PathVariable("id") Long id){
-        var arquivo = arquivoRepo.findById(id).get();
-        System.out.println(arquivo);
-        return new ModelAndView("atualizar_arquivo")
-                .addObject("arquivo", arquivo);
+    public ModelAndView retornaAtualizarArquivo(@PathVariable("id") Long id) {
+        Optional<Arquivo> arquivoOpt = arquivoRepo.findById(id);
+
+        return arquivoOpt.map(arquivo -> new ModelAndView("atualizar_arquivo").addObject("arquivo", arquivo))
+                .orElseGet(() -> new ModelAndView("error").addObject("message", "Arquivo não encontrado."));
     }
 
     @PostMapping("{id}/atualizar-arquivo")
     public ModelAndView atualizarArquivo(@PathVariable("id") Long id,
-                                         MultipartFile file,
+                                         @RequestPart("file") MultipartFile file,
                                          @Valid Arquivo arquivoRecebido,
-                                         BindingResult result){
+                                         BindingResult result) {
+        Optional<Arquivo> arquivoOpt = arquivoRepo.findById(id);
 
-        var arquivoOpt = arquivoRepo.findById(id);
+        if (result.hasErrors()) {
+            return new ModelAndView("atualizar_arquivo")
+                    .addObject("id", id)
+                    .addObject("arquivo", arquivoRecebido);
+        }
 
-        if(result.hasErrors()) {
-            ModelAndView mv = new ModelAndView("atualiza_arquivo");
-            mv.addObject("id", id);
-            mv.addObject("arquivo", arquivoOpt);
-            return mv;
-        }else {
+        if (arquivoOpt.isPresent()) {
             String extension = StringUtils.getFilenameExtension(file.getOriginalFilename());
-            var arquivo = arquivoOpt.get();
-            if (arquivoOpt.isPresent() && verificaFormato(extension)){
+            Arquivo arquivo = arquivoOpt.get();
+
+            if (verificaFormato(extension)) {
                 try {
                     arquivo.setNome(file.getOriginalFilename());
                     arquivo.setTamanho(file.getSize());
-                    arquivo.setExtensao(StringUtils.getFilenameExtension(file.getOriginalFilename()));
+                    arquivo.setExtensao(extension);
                     arquivo.setDataUpload(LocalDateTime.now());
                     arquivo.setUrl(arquivoRecebido.getUrl());
                     azureBlobService.uploadFile(file, arquivo.getUsuario().getNomeContainer());
                     arquivoRepo.save(arquivo);
 
                     return new ModelAndView("redirect:/{idUsuario}/arquivos")
-                            .addObject("idUsuario", id);
-                }catch (RuntimeException e){
+                            .addObject("idUsuario", arquivo.getUsuario().getId());
+                } catch (RuntimeException e) {
                     return new ModelAndView("error").addObject("message", "Erro ao atualizar o arquivo.");
                 }
-            }
-            else {
+            } else {
                 result.rejectValue("error", null, "Tipo de arquivo não permitido.");
-                return new ModelAndView("redirect:/{id}/atualizar-arquivo")
-                        .addObject("idUsuario", id);
+                return new ModelAndView("atualizar_arquivo")
+                        .addObject("id", id)
+                        .addObject("arquivo", arquivoRecebido);
             }
         }
+
+        return new ModelAndView("error").addObject("message", "Arquivo não encontrado.");
     }
 
     @GetMapping("{id}/remover-arquivo")
-    public ModelAndView removerArquivo(@PathVariable Long id){
-        var arquivoOpt = arquivoRepo.findById(id);
-        if (arquivoOpt.isPresent()){
+    public ModelAndView removerArquivo(@PathVariable Long id) {
+        Optional<Arquivo> arquivoOpt = arquivoRepo.findById(id);
+
+        if (arquivoOpt.isPresent()) {
             arquivoRepo.deleteById(id);
-//            var user = usuarioRepo.findById(arquivoOpt.get().getUsuario().getId());
+            // Considerando que você deseja redirecionar para a lista de arquivos do usuário associado ao arquivo
+            return new ModelAndView("redirect:/{idUsuario}/arquivos")
+                    .addObject("idUsuario", arquivoOpt.get().getUsuario().getId());
         }
-        return new ModelAndView("redirect:/{id}/arquivos")
-                .addObject("id", arquivoOpt.get().getUsuario().getId());
+
+        return new ModelAndView("error").addObject("message", "Arquivo não encontrado.");
     }
 
-    private boolean verificaFormato(String extension){
+    private boolean verificaFormato(String extension) {
         List<String> textExtensions = Arrays.asList("txt", "doc", "docx", "rtf", "csv", "xml", "pdf");
         return extension != null && textExtensions.contains(extension.toLowerCase());
     }
-
-
 }

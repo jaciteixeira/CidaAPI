@@ -44,7 +44,7 @@ public class Arquivo {
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(
             name = "ID_usuario",
-            referencedColumnName = "ID_usuario",
+            referencedColumnName = "ID_USUARIO",
             foreignKey = @ForeignKey(name = "FK_USUARIO_ARQUIVO")
     )
     private Usuario usuario;

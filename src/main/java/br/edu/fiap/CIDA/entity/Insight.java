@@ -28,7 +28,7 @@ public class Insight {
     @Column(name = "descricao")
     private String descricao;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE})
     @JoinColumn(
             name = "id_usuario",
             referencedColumnName = "id_usuario",
