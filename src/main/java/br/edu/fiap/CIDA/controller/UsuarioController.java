@@ -239,6 +239,11 @@ public class UsuarioController {
         }
 
         try {
+
+            var listArquivos = arquivoRepo.findByUsuario(repo.findById(id).get());
+            for (Arquivo arquivo: listArquivos){
+                arquivoRepo.deleteById(arquivo.getId());
+            }
             repo.deleteById(id);
             session.invalidate();
         } catch (Exception e) {
