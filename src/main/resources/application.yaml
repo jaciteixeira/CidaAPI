@@ -11,9 +11,10 @@ server:
 
 azure:
   storage:
-    account-name: ""
-    account-key: ""
-    connection-string: ""
+    account-name: "cidastore"
+    account-key: "OofPa4ovwX8556wyVanY8OPUP5pnxAHLCdYTPoujBqhpU/2Aty6uQfbnoaTA0Rcgb1cRVsq/oPwQ+AStTpvISg=="
+    container-name: "teste-container"
+    connection-string: "DefaultEndpointsProtocol=https;AccountName=cidastore;AccountKey=OofPa4ovwX8556wyVanY8OPUP5pnxAHLCdYTPoujBqhpU/2Aty6uQfbnoaTA0Rcgb1cRVsq/oPwQ+AStTpvISg==;EndpointSuffix=core.windows.net"
 
 #springdoc:
 #  swagger-ui:
