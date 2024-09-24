@@ -60,6 +60,7 @@
     </style>
 </head>
 <body>
+<div th:replace="~{header :: header}" />
 <div class="container mt-5">
     <h2>Cadastrar Usuário</h2>
     <form th:object="${usuarioRequest}" action="/usuario" method="post">

@@ -52,18 +52,19 @@
     </style>
 </head>
 <body>
+<div th:replace="~{header :: header}" />
 <div class="container mt-5">
     <h2>Login</h2>
     <form th:action="@{/login}" method="post">
         <div class="form-group">
-            <label for="email">Email</label>
-            <input type="text" id="email" name="email" class="form-control" placeholder="Digite seu email" required>
+            <label th:text="#{email}" for="email">Email</label>
+            <input type="text" id="email" name="email" class="form-control" th:placeholder="#{placeholder_email}" required>
         </div>
         <div class="form-group">
-            <label for="password">Senha</label>
-            <input type="password" id="password" name="password" class="form-control" placeholder="Digite sua senha" required>
+            <label th:text="#{password}" for="password">Senha</label>
+            <input type="password" id="password" name="password" class="form-control" th:placeholder="#{placeholder_pass}" required>
         </div>
-        <button type="submit" class="btn btn-primary">Entrar</button>
+        <button th:text="#{botao_entrar}" type="submit" class="btn btn-primary">Entrar</button>
 
         <div th:if="${error}" class="alert alert-danger mt-3" role="alert">
             <span th:text="${error}"></span>
@@ -71,10 +72,11 @@
     </form>
 
     <div class="row">
-        <span>Não tem conta? <a href="/novo_usuario">Registrar</a></span>
+        <span th:text="#{not_account}">Não tem conta? </span>
+        <a th:text="#{register}" href="/novo_usuario"> Registrar</a>
     </div>
     <div class="row">
-        <a href="/">Retorne para a página inicial</a>
+        <a href="/" th:text="#{return_inicial}">Retorne para a página inicial</a>
     </div>
 </div>
 

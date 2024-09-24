@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Atualizar Perfil</title>
+  <title th:text="#{atualizar_perfil}">Atualizar Perfil</title>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
@@ -54,36 +54,37 @@
 </head>
 
 <body>
+<div th:replace="~{header :: header}" />
 <div th:object="${usuario}" class="container mt-5">
-  <h2 class="text-center">Atualizar Perfil</h2>
+  <h2 class="text-center" th:text="#{atualizar_perfil}"></h2>
   <form th:action="@{/{id}/atualizar-usuario(id=${usuario.id})}" method="post" class="needs-validation" novalidate>
 
     <!-- Campo de Email -->
     <div class="form-group">
-      <label for="email">Endereço de Email (não pode ser alterado)</label>
+      <label for="email" th:text="#{email_label}">Endereço de Email (não pode ser alterado)</label>
       <input type="email" class="form-control" id="email" th:value="${usuario.authUser.email}" readonly>
       <input type="hidden" th:field="${usuarioRequest.email}" th:value="${usuario.authUser.email}">
     </div>
 
     <!-- Campo de Senha -->
     <div class="form-group">
-      <label for="senha">Senha (não pode ser alterada)</label>
+      <label for="senha" th:text="#{senha_label}">Senha (não pode ser alterada)</label>
       <input type="password" class="form-control" id="senha" readonly>
       <input type="hidden" th:field="${usuarioRequest.senha}" th:value="${usuario.authUser.hashSenha}">
     </div>
 
     <!-- Campo de Telefone -->
     <div class="form-group">
-      <label for="telefone">Telefone</label>
+      <label for="telefone" th:text="#{telefone_label}">Telefone</label>
       <input type="text" class="form-control" id="telefone" th:field="*{telefone}" th:errorclass="is-invalid" required>
       <div class="invalid-feedback" th:errors="*{telefone}"></div>
     </div>
 
     <!-- Campo de Tipo de Documento -->
     <div class="form-group">
-      <label for="tipoDoc">Tipo de Documento</label>
+      <label for="tipoDoc" th:text="#{tipo_documento_label}">Tipo de Documento</label>
       <select class="form-control" id="tipoDoc" th:field="*{tipoDoc}" th:errorclass="is-invalid" required>
-        <option value="">Selecione o tipo de documento</option>
+        <option value="" th:text="#{selecione_tipo_documento}">Selecione o tipo de documento</option>
         <option th:each="tipo : ${tipoDoc}" th:value="${tipo}" th:text="${tipo}"></option>
       </select>
       <div class="invalid-feedback" th:errors="*{tipoDoc}"></div>
@@ -91,19 +92,19 @@
 
     <!-- Campo de Número de Documento -->
     <div class="form-group">
-      <label for="numeroDocumento">Número do Documento</label>
+      <label for="numeroDocumento" th:text="#{numero_documento_label}">Número do Documento</label>
       <input type="text" class="form-control" id="numeroDocumento" th:field="*{numeroDocumento}" th:errorclass="is-invalid" required>
       <div class="invalid-feedback" th:errors="*{numeroDocumento}"></div>
     </div>
 
     <!-- Botão de Atualizar -->
-    <button type="submit" class="btn btn-primary btn-block">Atualizar</button>
+    <button type="submit" class="btn btn-primary btn-block" th:text="#{atualizar}">Atualizar</button>
   </form>
 
   <!-- Link para retornar à página inicial -->
   <div class="row mt-3">
     <div class="col text-center">
-      <a href="/">Retorne para a página inicial</a>
+      <a th:href="@{/}" th:text="#{retornar_pagina_inicial}">Retorne para a página inicial</a>
     </div>
   </div>
 </div>

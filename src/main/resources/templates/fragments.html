@@ -1,11 +1,11 @@
-<div th:fragment="idioma(pagina)">
-	<form th:action="@{/logout}" method="post">
-		<button type="submit" style="float: right">Sair</button>
-	</form><br>
-</div>
-
 <div th:fragment="sair">
 	<form th:action="@{/logout}" method="post">
 		<button type="submit" style="float: right">Sair</button>
 	</form><br>
 </div>
+
+<div th:fragment="idioma(pagina)">
+	<a th:href="@{__${pagina}__ (lang='pt')}">Português</a><br>
+	<a th:href="@{__${pagina}__ (lang='en')}">Inglês</a>
+</div>
+

@@ -1,0 +1,57 @@
+<header class="text-center" th:fragment="header">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm py-3">
+    <a class="navbar-brand font-weight-bold text-primary" href="/">CIDA</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link text-dark font-weight-bold" th:href="@{/}" th:text="#{header_home}">Início</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-dark font-weight-bold" th:href="@{/sobre}" th:text="#{header_about}">Sobre</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-dark font-weight-bold" th:href="@{/contato}" th:text="#{header_contact}">Contato</a>
+        </li>
+        <li class="nav-item">
+          <div th:replace="~{fragments :: idioma('/')}" />
+        </li>
+        <li class="nav-item">
+          <div th:replace="~{fragments :: sair}" />
+        </li>
+      </ul>
+    </div>
+  </nav>
+</header>
+
+<style>
+  .navbar {
+    background-color: #ffffff;
+    border-bottom: 2px solid #007bff;
+  }
+
+  .navbar-brand {
+    font-size: 1.75rem;
+    color: #007bff !important;
+  }
+
+  .nav-link {
+    font-size: 1.1rem;
+    padding-right: 20px;
+  }
+
+  .nav-link:hover {
+    color: #0056b3 !important;
+    text-decoration: underline;
+  }
+
+  .navbar-toggler {
+    border-color: #007bff;
+  }
+
+  .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=UTF8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%280, 123, 255, 1%29' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+  }
+</style>

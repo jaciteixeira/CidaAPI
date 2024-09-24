@@ -19,14 +19,11 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
-                .csrf(csrf -> csrf.disable())  // Desabilita CSRF usando a nova API
-                .authorizeHttpRequests(authorizeConfig -> {
-                    authorizeConfig
-                            .requestMatchers("/**").permitAll()  // Permite todos os endpoints
-                            .anyRequest().permitAll();  // Permite qualquer outra requisição
-                })
-//                .formLogin(Customizer.withDefaults())  // Habilita o login padrão (se necessário)
-                .build();
+        http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated())
+                .formLogin((form) -> form.loginPage("/login").failureUrl("/login?erro=true")
+                        .defaultSuccessUrl("/home").permitAll())
+                .logout((logout) -> logout.logoutUrl("/logout").logoutSuccessUrl("/login?logout=true").permitAll());
+
+        return http.build();
     }
 }

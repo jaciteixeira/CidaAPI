@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -29,4 +31,9 @@ public class Auth {
     private String hashSenha;
     @Column(name = "ULTIMO_LOGIN")
     private LocalDateTime ultimoLogin;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "T_OP_ASSOCIACAO_AUTH_ROLE",
+            joinColumns = @JoinColumn(name = "id_auth"),
+            inverseJoinColumns = @JoinColumn(name = "id_role"))
+    private Set<Role> roles = new HashSet<>();
 }

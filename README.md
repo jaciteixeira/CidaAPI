@@ -2,12 +2,12 @@
 
 ## Integrantes
 
-| INTEGRANTES                    | RM      | PAPEL                       |
-|--------------------------------|---------|-----------------------------|
-| Cauã Alencar Rojas Romero      | RM98638 | Desenvolvimento Backend      |   
-| Jaci Teixeira Santos           | RM99627 | Design e Frontend           | 
-| Leonardo dos Santos Guerra     | RM99738 | Arquitetura e Infraestrutura | 
-| Maria Eduarda Ferreira da Mata | RM99004 | Análise de Dados e QA       |
+| INTEGRANTES                    | RM      |
+|--------------------------------|---------|
+| Cauã Alencar Rojas Romero      | RM98638 | 
+| Jaci Teixeira Santos           | RM99627 | 
+| Leonardo dos Santos Guerra     | RM99738 | 
+| Maria Eduarda Ferreira da Mata | RM99004 | 
 
 ## LINK DO REPOSITORIO NO GITHUB
 [Link](https://github.com/jaciteixeira/CidaAPI.git)

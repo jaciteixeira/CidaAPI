@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home do Usuário</title>
+    <title th:text="#{header_home}">Home do Usuário</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
@@ -85,61 +85,61 @@
 </head>
 
 <body th:object="${user}">
+<div th:replace="~{header :: header}" />
 <div class="container">
-    <h2 class="text-center">Bem-vindo, <span th:text="*{authUser.email}"></span>!</h2>
+    <h2 class="text-center" th:text="#{home_title(*{authUser.email})}"></h2>
 
-    <p><strong>Telefone:</strong> <span th:text="*{telefone}"></span></p>
-    <p><strong>Data Criação da Conta:</strong> <span th:text="*{dataCriacao}"></span></p>
-    <p><strong>Último Login:</strong> <span th:text="*{authUser.ultimoLogin}"></span></p>
-    <p><strong>Container:</strong> <span th:text="*{nomeContainer}"></span></p>
+    <p><strong th:text="#{telefone}"></strong> <span th:text="*{telefone}"></span></p>
+    <p><strong th:text="#{data_criacao}"></strong> <span th:text="*{dataCriacao}"></span></p>
+    <p><strong th:text="#{ultimo_login}"></strong> <span th:text="*{authUser.ultimoLogin}"></span></p>
+    <p><strong th:text="#{container}"></strong> <span th:text="*{nomeContainer}"></span></p>
 
     <!-- Botão para Adicionar Arquivo -->
     <div class="text-center mt-5">
-        <a th:href="@{/{id}/enviar_arquivo(id=${user.id})}" class="btn btn-primary">
-            Adicionar Arquivo
-        </a>
+        <a th:href="@{/{id}/enviar_arquivo(id=${user.id})}" class="btn btn-primary" th:text="#{adicionar_arquivo}"></a>
     </div>
 
     <!-- Botão para Listar Arquivos Cadastrados -->
     <div class="text-center mt-5">
-        <a th:href="@{/{id}/arquivos(id=${user.id})}" class="btn btn-primary">
-            Lista dos Arquivos Cadastrados
-        </a>
+        <a th:href="@{/{id}/arquivos(id=${user.id})}" class="btn btn-primary" th:text="#{listar_arquivos}"></a>
     </div>
 
     <!-- Botão para Listar Insights Gerados -->
     <div class="text-center mt-5">
-        <a th:href="@{/{id}/insights/listar(id=${user.id})}" class="btn btn-primary">
-            Lista de Insights Gerados
-        </a>
+        <a th:href="@{/{id}/insights/listar(id=${user.id})}" class="btn btn-primary" th:text="#{listar_insights}"></a>
     </div>
 
     <!-- Botão para Gerar Insight -->
     <div class="text-center mt-5">
         <form method="post" th:action="@{/{id}/analisar(id=${user.id})}">
-            <button type="submit" class="btn btn-primary">Gerar Insight</button>
+            <button type="submit" class="btn btn-primary" th:text="#{gerar_insight}"></button>
         </form>
     </div>
 
     <!-- Botão para Atualizar Informações do Perfil -->
     <div class="text-center mt-5">
-        <a th:href="@{/{id}/atualizar-usuario(id=${user.id})}" class="btn btn-primary">
-            Atualizar Informações do Perfil
-        </a>
+        <a th:href="@{/{id}/atualizar-usuario(id=${user.id})}" class="btn btn-primary" th:text="#{atualizar_perfil}"></a>
     </div>
 
     <!-- Botão de Excluir Conta -->
     <div class="text-center mt-5">
-        <form method="post" th:action="@{/{id}/remover-conta(id=${user.id})}"
-              onsubmit="return confirm('Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.');">
-            <button type="submit" class="btn btn-danger">Excluir Conta</button>
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            var confirmMessage = /*[[${'#confirm_excluir'}]]*/ 'Are you sure you want to delete your account? This action cannot be undone.'; // Default message if translation fails
+            /*]]>*/
+        </script>
+
+        <form method="post" th:action="@{/{id}/remover-conta(id=${user.id})}" onsubmit="return confirm(confirmMessage);">
+            <button type="submit" class="btn btn-danger" th:text="#{excluir_conta}"></button>
         </form>
+
+
     </div>
 
     <!-- Botão de Logout -->
     <div class="text-center mt-5">
         <form method="post" th:action="@{/logout}">
-            <button type="submit" class="btn btn-secondary">Logout</button>
+            <button type="submit" class="btn btn-secondary" th:text="#{logout}"></button>
         </form>
     </div>
 </div>

@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Controller
+@RestController
 public class UsuarioController {
 
     @Autowired
@@ -148,7 +149,7 @@ public class UsuarioController {
         boolean isAuthenticated = authenticate(email, password);
 
         if (isAuthenticated) {
-            Auth authUser = repoAuth.findByEmail(email);
+            Auth authUser = repoAuth.findByEmail(email).get();
             Usuario usuario = repo.findByAuthUser(authUser);
             session.setAttribute("usuario", usuario);
             usuario.getAuthUser().setUltimoLogin(LocalDateTime.now());
@@ -257,7 +258,7 @@ public class UsuarioController {
 
 
     public boolean authenticate(String email, String rawPassword) {
-        Auth authUser = repoAuth.findByEmail(email);
+        Auth authUser = repoAuth.findByEmail(email).get();
         if (authUser != null) {
             return passwordEncoder.matches(rawPassword, authUser.getHashSenha());
         }
