@@ -55,7 +55,7 @@
 <div th:replace="~{header :: header}" />
 <div class="container mt-5">
     <h2>Login</h2>
-    <form th:action="@{/login}" method="post">
+    <form th:action="@{login-usuario}" method="post">
         <div class="form-group">
             <label th:text="#{email}" for="email">Email</label>
             <input type="text" id="email" name="email" class="form-control" th:placeholder="#{placeholder_email}" required>

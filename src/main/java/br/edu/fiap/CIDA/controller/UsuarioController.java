@@ -3,10 +3,12 @@ package br.edu.fiap.CIDA.controller;
 import br.edu.fiap.CIDA.dto.request.UsuarioRequest;
 import br.edu.fiap.CIDA.entity.Arquivo;
 import br.edu.fiap.CIDA.entity.Auth;
+import br.edu.fiap.CIDA.entity.Role;
 import br.edu.fiap.CIDA.entity.TipoDocumento;
 import br.edu.fiap.CIDA.entity.Usuario;
 import br.edu.fiap.CIDA.repository.ArquivoRepository;
 import br.edu.fiap.CIDA.repository.AuthRepository;
+import br.edu.fiap.CIDA.repository.RoleRepository;
 import br.edu.fiap.CIDA.repository.UsuarioRepository;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.ConstraintViolation;
@@ -34,6 +36,8 @@ public class UsuarioController {
     AuthRepository repoAuth;
     @Autowired
     ArquivoRepository arquivoRepo;
+    @Autowired
+    private RoleRepository roleRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -78,10 +82,20 @@ public class UsuarioController {
             containerName = containerName.substring(0, 63);
         }
 
+
+        String ROLE = (userRequest.email().contains("@opengroup")) ? "ROLE_ADMIN" : "ROLE_USER";
+
+        Role roleUser = roleRepository.findByName(ROLE)
+                .orElseThrow(() -> new IllegalArgumentException("Role não encontrada"));
+
+        Set<Role> roles = new HashSet<>();
+        roles.add(roleUser);
+
         var authUser = Auth.builder()
                 .email(userRequest.email())
                 .hashSenha(passwordEncoder.encode(userRequest.senha()))
                 .ultimoLogin(LocalDateTime.now())
+                .roles(roles)
                 .build();
         var user = Usuario.builder()
                 .authUser(authUser)
@@ -144,9 +158,10 @@ public class UsuarioController {
     }
 
 
-    @PostMapping("/login")
+    @PostMapping("/login-usuario")
     public ModelAndView login(@RequestParam String email, @RequestParam String password, HttpSession session) {
         boolean isAuthenticated = authenticate(email, password);
+        System.out.println("DENTRO DE /login");
 
         if (isAuthenticated) {
             Auth authUser = repoAuth.findByEmail(email).get();
@@ -158,6 +173,7 @@ public class UsuarioController {
         } else {
             ModelAndView mv = new ModelAndView("login");
             mv.addObject("error", "Credenciais inválidas");
+            System.out.println(mv);
             return mv;
         }
     }

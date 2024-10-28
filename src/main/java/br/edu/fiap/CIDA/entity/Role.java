@@ -21,7 +21,7 @@ public class Role {
     @SequenceGenerator(name = "SQ_OP_ROLE", sequenceName = "SQ_OP_ROLE", allocationSize = 1)
     @Column(name = "ID_ROLE")
     private Long id;
-    @Column(name = "NOME")
-    private String nome;
+    @Column(name = "NAME")
+    private String name;
 
 }

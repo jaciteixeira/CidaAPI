@@ -26,7 +26,7 @@ public class UsuarioUserDetailsService implements UserDetailsService {
                 () -> new UsernameNotFoundException("Usuário " + email + " não encontrado na base de dados"));
 
         return new User(resgatado.getEmail(), resgatado.getHashSenha(), resgatado.getRoles()
-                .stream().map(role -> new SimpleGrantedAuthority(role.getNome())).collect(Collectors.toList()));
+                .stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList()));
     }
 
 }
