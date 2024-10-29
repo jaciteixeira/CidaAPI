@@ -27,7 +27,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Controller
-@RestController
+//@RestController
 public class UsuarioController {
 
     @Autowired
@@ -42,11 +42,8 @@ public class UsuarioController {
     private PasswordEncoder passwordEncoder;
 
     @GetMapping("/")
-    public ModelAndView index(HttpSession session) {
-        if (session.getAttribute("usuario") != null) {
-            return new ModelAndView("redirect:/home");
-        }
-        return new ModelAndView("index");
+    public String index() {
+        return "index";
     }
 
     @GetMapping("/teste")
@@ -150,33 +147,30 @@ public class UsuarioController {
     }
 
     @GetMapping("/login")
-    public ModelAndView loginPage(HttpSession session) {
-        if (session.getAttribute("usuario") != null) {
-            return new ModelAndView("redirect:/home");
-        }
-        return new ModelAndView("login");
+    public String login() {
+        return "login";
     }
 
 
-    @PostMapping("/login-usuario")
-    public ModelAndView login(@RequestParam String email, @RequestParam String password, HttpSession session) {
-        boolean isAuthenticated = authenticate(email, password);
-        System.out.println("DENTRO DE /login");
-
-        if (isAuthenticated) {
-            Auth authUser = repoAuth.findByEmail(email).get();
-            Usuario usuario = repo.findByAuthUser(authUser);
-            session.setAttribute("usuario", usuario);
-            usuario.getAuthUser().setUltimoLogin(LocalDateTime.now());
-            repo.save(usuario);
-            return new ModelAndView("redirect:/home");
-        } else {
-            ModelAndView mv = new ModelAndView("login");
-            mv.addObject("error", "Credenciais inválidas");
-            System.out.println(mv);
-            return mv;
-        }
-    }
+//    @PostMapping("/login")
+//    public ModelAndView login(@RequestParam String email, @RequestParam String password, HttpSession session) {
+//        boolean isAuthenticated = authenticate(email, password);
+//        System.out.println("DENTRO DE /login");
+//
+//        if (isAuthenticated) {
+//            Auth authUser = repoAuth.findByEmail(email).get();
+//            Usuario usuario = repo.findByAuthUser(authUser);
+//            session.setAttribute("usuario", usuario);
+//            usuario.getAuthUser().setUltimoLogin(LocalDateTime.now());
+//            repo.save(usuario);
+//            return new ModelAndView("redirect:/home");
+//        } else {
+//            ModelAndView mv = new ModelAndView("login");
+//            mv.addObject("error", "Credenciais inválidas");
+//            System.out.println(mv);
+//            return mv;
+//        }
+//    }
 
     @GetMapping("/{id}/atualizar-usuario")
     public ModelAndView retornaViewatualizaUsuario(@PathVariable Long id,
@@ -273,12 +267,12 @@ public class UsuarioController {
     }
 
 
-    public boolean authenticate(String email, String rawPassword) {
-        Auth authUser = repoAuth.findByEmail(email).get();
-        if (authUser != null) {
-            return passwordEncoder.matches(rawPassword, authUser.getHashSenha());
-        }
-        return false;
-    }
+//    public boolean authenticate(String email, String rawPassword) {
+//        Auth authUser = repoAuth.findByUsername(email).get();
+//        if (authUser != null) {
+//            return passwordEncoder.matches(rawPassword, authUser.getHashSenha());
+//        }
+//        return false;
+//    }
 
 }
