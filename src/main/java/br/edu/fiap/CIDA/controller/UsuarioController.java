@@ -10,13 +10,14 @@ import br.edu.fiap.CIDA.repository.ArquivoRepository;
 import br.edu.fiap.CIDA.repository.AuthRepository;
 import br.edu.fiap.CIDA.repository.RoleRepository;
 import br.edu.fiap.CIDA.repository.UsuarioRepository;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -52,11 +53,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/novo_usuario")
-    public ModelAndView retornaViewNewUser(HttpSession session) {
-
-        if (session.getAttribute("usuarioRequest") != null) {
-            return new ModelAndView("redirect:/home");
-        }
+    public ModelAndView retornaViewNewUser() {
 
         ModelAndView mv = new ModelAndView("new_user");
         mv.addObject("tipoDoc", TipoDocumento.values());
@@ -67,8 +64,7 @@ public class UsuarioController {
 
     @PostMapping("/usuario")
     public ModelAndView insereUsuario(@Valid UsuarioRequest userRequest,
-                                      BindingResult bindingResult,
-                                      HttpSession session) {
+                                      BindingResult bindingResult) {
 
         String prefix = "cida-container-";
         String uuidPart = UUID.randomUUID().toString().replaceAll("-", "").toLowerCase();
@@ -127,22 +123,34 @@ public class UsuarioController {
             mv.addObject("tipoDoc", TipoDocumento.values());
             return mv;
         }
-        session.setAttribute("usuario", user);
 
         return new ModelAndView("redirect:/home");
     }
 
 
     @GetMapping("/home")
-    public ModelAndView transfToHome(HttpSession session) {
-        if (session.getAttribute("usuario") == null) {
-            return new ModelAndView("redirect:/login"); // Redireciona para home se estiver logado
+    public ModelAndView transfToHome() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        Object principal = auth.getPrincipal();
+        Auth usuario;
+
+        if (principal instanceof Usuario) {
+            usuario = (Auth) principal;
+        } else if (principal instanceof org.springframework.security.core.userdetails.User) {
+            // Handle the case where the principal is Spring Security's User
+            String username = ((org.springframework.security.core.userdetails.User) principal).getUsername();
+            usuario = repoAuth.findByEmail(username)
+                    .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+        } else {
+            throw new IllegalStateException("Tipo de principal não esperado: " + principal.getClass());
         }
 
-        Usuario user = (Usuario) session.getAttribute("usuario");
+        //TODO returnar usuario para home
+
 
         ModelAndView mv = new ModelAndView("home");
-        mv.addObject("user", user);
+        mv.addObject("usuario", usuario);
         return mv;
     }
 
@@ -153,14 +161,13 @@ public class UsuarioController {
 
 
 //    @PostMapping("/login")
-//    public ModelAndView login(@RequestParam String email, @RequestParam String password, HttpSession session) {
+//    public ModelAndView login(@RequestParam String email, @RequestParam String password) {
 //        boolean isAuthenticated = authenticate(email, password);
 //        System.out.println("DENTRO DE /login");
 //
 //        if (isAuthenticated) {
 //            Auth authUser = repoAuth.findByEmail(email).get();
 //            Usuario usuario = repo.findByAuthUser(authUser);
-//            session.setAttribute("usuario", usuario);
 //            usuario.getAuthUser().setUltimoLogin(LocalDateTime.now());
 //            repo.save(usuario);
 //            return new ModelAndView("redirect:/home");
@@ -173,33 +180,21 @@ public class UsuarioController {
 //    }
 
     @GetMapping("/{id}/atualizar-usuario")
-    public ModelAndView retornaViewatualizaUsuario(@PathVariable Long id,
-                                                   HttpSession session) {
+    public ModelAndView retornaViewatualizaUsuario(@PathVariable Long id) {
         Usuario usuario = repo.findById(id).orElse(null);
 
-//        if (usuario == null) {
-//            return new ModelAndView("redirect:/login");
-//        }
-
-        Usuario usuarioSessao = (Usuario) session.getAttribute("usuario");
-        if (usuarioSessao == null || !usuarioSessao.getId().equals(id)) {
-            return new ModelAndView("redirect:/login");
-        }
-
-        ModelAndView mv = new ModelAndView("profile_update")
+        return new ModelAndView("profile_update")
                 .addObject("tipoDoc", TipoDocumento.values())
                 .addObject("usuario", usuario)
                 .addObject("usuarioRequest", new UsuarioRequest("", "", "", null, ""));
 
-        return mv;
     }
 
 
     @PostMapping("/{id}/atualizar-usuario")
     public ModelAndView atualizaUsuario(@PathVariable Long id,
                                         UsuarioRequest userRequest,
-                                        BindingResult bindingResult,
-                                        HttpSession session) {
+                                        BindingResult bindingResult) {
 
         Usuario usuarioAtual = repo.findById(id).orElse(null);
         System.out.println(userRequest);
@@ -234,20 +229,12 @@ public class UsuarioController {
             return mv;
         }
 
-        session.setAttribute("usuario", usuarioAtual);
         return new ModelAndView("redirect:/home");
     }
 
 
     @PostMapping("/{id}/remover-conta")
-    public ModelAndView removeUsuario(@PathVariable Long id,
-                                      HttpSession session) {
-
-        Usuario usuarioAtual = (Usuario) session.getAttribute("usuario");
-
-        if (usuarioAtual == null) {
-            return new ModelAndView("redirect:/login");
-        }
+    public ModelAndView removeUsuario(@PathVariable Long id) {
 
         try {
 
@@ -256,7 +243,6 @@ public class UsuarioController {
                 arquivoRepo.deleteById(arquivo.getId());
             }
             repo.deleteById(id);
-            session.invalidate();
         } catch (Exception e) {
             ModelAndView mv = new ModelAndView("index");
             mv.addObject("error", "Erro ao remover o usuário");

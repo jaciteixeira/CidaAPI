@@ -25,8 +25,11 @@ public class UsuarioUserDetailsService implements UserDetailsService {
         Auth resgatado = uRep.findByEmail(email).orElseThrow(
                 () -> new UsernameNotFoundException("Usuário " + email + " não encontrado na base de dados"));
 
-        return new User(resgatado.getEmail(), resgatado.getHashSenha(), resgatado.getRoles()
+        var user =  new User(resgatado.getEmail(), resgatado.getHashSenha(), resgatado.getRoles()
                 .stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList()));
+
+        System.out.println("UsuarioUserDetails"+user);
+        return user;
     }
 
 }

@@ -21,9 +21,9 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/novo_usuario", "/usuario").permitAll()
-                        .requestMatchers("/usuarios", "/remove-usuario", "/atualiza-status-usuario").hasAuthority("ROLE_ADMIN")
-                        .anyRequest().authenticated()
+//                        .requestMatchers("/", "/novo_usuario", "/usuario").permitAll()
+//                        .requestMatchers("/usuarios", "/remove-usuario", "/atualiza-status-usuario").hasAuthority("ROLE_ADMIN")
+                        .anyRequest().permitAll()
                 )
                 .formLogin((form) -> form
                         .loginPage("/login")
@@ -35,13 +35,14 @@ public class SecurityConfig {
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout=true")
                         .permitAll()
-                )
-                .exceptionHandling((exception) -> exception
-                        .accessDeniedHandler(
-                                (request,response,accessDeniedHandler) ->
-    											{response.sendRedirect("/acesso_negado");}
-                        ));
+                );
+//                .exceptionHandling((exception) -> exception
+//                        .accessDeniedHandler(
+//                                (request,response,accessDeniedHandler) ->
+//    											{response.sendRedirect("/acesso_negado");}
+//                        ));
 
+        System.out.println("HTTP: "+http);
         return http.build();
     }
 }
