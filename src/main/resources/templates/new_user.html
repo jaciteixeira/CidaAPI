@@ -63,7 +63,12 @@
 <div th:replace="~{header :: header}" />
 <div class="container mt-5">
     <h2>Cadastrar Usuário</h2>
-    <form th:object="${usuarioRequest}" action="/usuario" method="post">
+
+    <div th:if="${error}" class="alert alert-warning" role="alert">
+        <span th:text="${error}"></span>
+    </div>
+
+    <form th:object="${usuarioRequest}" th:action="@{/usuario}" method="post">
         <div class="mb-3">
             <label for="email" class="form-label">Endereço de Email</label>
             <input type="email" class="form-control" id="email" th:field="*{email}" th:errorclass="is-invalid" placeholder="Digite seu email">

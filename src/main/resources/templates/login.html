@@ -55,24 +55,14 @@
 <div th:replace="~{header :: header}" />
 <div class="container mt-5">
     <h2>Login</h2>
-<!--    <form th:action="@{/login}" method="post">-->
-<!--        <div class="form-group">-->
-<!--            <label th:text="#{email}" for="username">Email</label>-->
-<!--            <input type="text" id="username" name="username" class="form-control" th:placeholder="#{placeholder_email}" required>-->
-<!--        </div>-->
-<!--        <div class="form-group">-->
-<!--            <label th:text="#{password}" for="password">Senha</label>-->
-<!--            <input type="password" id="password" name="password" class="form-control" th:placeholder="#{placeholder_pass}" required>-->
-<!--        </div>-->
-<!--        <button th:text="#{botao_entrar}" type="submit" class="btn btn-primary">Entrar</button>-->
 
-<!--&lt;!&ndash;        <div th:if="${error}" class="alert alert-danger mt-3" role="alert">&ndash;&gt;-->
-<!--&lt;!&ndash;            <span th:text="${error}"></span>&ndash;&gt;-->
-<!--&lt;!&ndash;        </div>&ndash;&gt;-->
-<!--        <div th:if="${param.erro}">-->
-<!--            <p style="color: red"><span th:text="#{msg_login_erro}">Usuário ou senha incorretos</span></p>-->
-<!--        </div>-->
-<!--    </form>-->
+    <div th:if="${successMessage}" class="alert alert-success" role="alert">
+        <span th:text="${successMessage}"></span>
+    </div>
+
+    <div th:if="${session.error}" class="error">
+        <p th:text="${session.error}"></p>
+    </div>
 
     <form th:action="@{/login}" method="post">
 
@@ -82,11 +72,11 @@
                                                                  type="password" id="password" name="password"><br>
 
         <div th:if="${param.erro}">
-            <p style="color: red"><span th:text="#{msg_login_erro}">Usuário ou senha incorretos</span></p>
+            <p class="alert alert-error"><span th:text="${error}"></span></p>
         </div>
 
         <div th:if="${param.logout}">
-            <p style="color: green;"><span > Você saiu com sucesso</span></p>
+            <p class="alert alert-success"><span > Você saiu com sucesso</span></p>
         </div>
 
         <button type="submit"><span >Logar</span></button>

@@ -76,6 +76,8 @@
                     <th scope="col">Data de Upload</th>
                     <th scope="col">Tamanho</th>
                     <th scope="col">Ações</th>
+                    <th></th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -89,7 +91,11 @@
                     <td th:text="${arquivo.tamanho} + ' MB'">Tamanho</td>
                     <td>
                         <a th:href="@{/{idArquivo}/detalhes-arquivo(idArquivo = ${arquivo.id})}" class="btn btn-link">Detalhes</a>
+                    </td>
+                    <td>
                         <a th:href="@{/{idArquivo}/atualizar-arquivo(idArquivo = ${arquivo.id})}" class="btn btn-link text-warning">Atualizar</a>
+                    </td>
+                    <td>
                         <a th:href="@{/{idArquivo}/remover-arquivo(idArquivo = ${arquivo.id})}" class="btn btn-link text-danger">Remover</a>
                     </td>
                 </tr>

@@ -2,11 +2,13 @@ package br.edu.fiap.CIDA.controller;
 
 import br.edu.fiap.CIDA.entity.Arquivo;
 import br.edu.fiap.CIDA.entity.Usuario;
+import br.edu.fiap.CIDA.rabbitmq.RabbitMQConfig;
 import br.edu.fiap.CIDA.repository.ArquivoRepository;
 import br.edu.fiap.CIDA.repository.UsuarioRepository;
 import br.edu.fiap.CIDA.service.AzureBlobService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;

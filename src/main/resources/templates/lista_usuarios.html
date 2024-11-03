@@ -1,0 +1,125 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Usuarios</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<style>
+  body {
+    background-color: #f4f7f6;
+  }
+
+  .container {
+    background-color: white;
+    padding: 40px;
+    border-radius: 10px;
+    margin-top: 50px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  h1 {
+    color: #343a40;
+    margin-bottom: 20px;
+  }
+
+  p {
+    color: #6c757d;
+  }
+
+  .table-hover tbody tr:hover {
+    background-color: #f1f1f1;
+  }
+
+  .table thead th {
+    background-color: #007bff;
+    color: white;
+  }
+
+  .no-files {
+    text-align: center;
+    font-style: italic;
+    color: #6c757d;
+  }
+
+  .btn-link {
+    color: #007bff;
+    font-weight: bold;
+    text-decoration: none;
+  }
+
+  .btn-link:hover {
+    text-decoration: underline;
+  }
+
+  .row a {
+    margin-top: 20px;
+    font-weight: bold;
+  }
+</style>
+</head>
+
+<body>
+<div class="container">
+  <div class="row">
+    <h1>Lista Usuarios</h1>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <p th:text="#{titulo_pag_usuarios}"></p>
+
+      <div th:if="${error}">
+        <p class="alert alert-info" th:text="${error}"></p>
+      </div>
+
+      <div th:if="${message}">
+        <p class="alert alert-info" th:text="${message}"></p>
+      </div>
+
+      <table class="table table-hover">
+        <thead>
+        <tr>
+          <th scope="col">Email</th>
+          <th scope="col">Ultimo Login</th>
+          <th scope="col">Data Criação</th>
+          <th scope="col">Status</th>
+          <th scope="col">Container AZURE</th>
+          <th></th>
+          <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${usuarios.isEmpty()}">
+          <td colspan="4" class="no-files">Nenhum usuario encontrado.</td>
+        </tr>
+
+        <tr th:each="usuario : ${usuarios}">
+          <td th:text="${usuario.authUser.email}">Email</td>
+          <td th:text="${usuario.authUser.ultimoLogin}" >Login</td>
+          <td th:text="${usuario.dataCriacao}" >Criação</td>
+          <td th:text="${usuario.status}" >Status</td>
+          <td th:text="${usuario.nomeContainer}" >Container</td>
+          <td>
+            <form method="post" th:action="@{/{id}/remover-conta(id=${usuario.id})}" >
+              <button type="submit" class="btn btn-danger" th:text="#{excluir_conta}"></button>
+            </form>
+          </td>
+          <td>
+            <a th:if="${usuario.status.toString() == 'INATIVO'}"
+               th:href="@{/{id-usuario}/ativar-conta(id-usuario=${usuario.id})}"
+               class="btn btn-link text-warning">
+              Ativar
+            </a>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="row">
+    <a href="/home" class="btn btn-link">Retorne para a home</a>
+  </div>
+</div>
+</body>

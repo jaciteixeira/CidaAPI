@@ -10,134 +10,59 @@
         body {
             background-color: #f8f9fa;
         }
-
-        .container {
-            background-color: white;
-            padding: 40px;
-            border-radius: 10px;
-            margin-top: 50px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        h2 {
-            color: #343a40;
-            font-size: 2em;
-        }
-
-        p {
-            font-size: 1.1em;
-            color: #495057;
-        }
-
-        .btn-primary, .btn-danger, .btn-secondary {
-            padding: 10px 20px;
-            font-size: 1.1em;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-
-        .btn-danger {
-            background-color: #dc3545;
-            border-color: #dc3545;
-        }
-
-        .btn-danger:hover {
-            background-color: #c82333;
-        }
-
-        .btn-secondary {
-            background-color: #6c757d;
-            border-color: #6c757d;
-        }
-
-        .btn-secondary:hover {
-            background-color: #5a6268;
-        }
-
-        .text-center {
-            margin-top: 30px;
-        }
-
-        a {
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        .mt-5 {
-            margin-top: 3rem !important;
-        }
-
-        .text-muted {
-            color: #6c757d !important;
-        }
     </style>
 </head>
 
 <body th:object="${user}">
-<div th:replace="~{header :: header}" />
-<div class="container">
-    <h2 class="text-center" th:text="#{home_title(*{authUser.email})}"></h2>
+<div th:replace="~{header :: header}"></div>
 
-    <p><strong th:text="#{telefone}"></strong> <span th:text="*{telefone}"></span></p>
-    <p><strong th:text="#{data_criacao}"></strong> <span th:text="*{dataCriacao}"></span></p>
-    <p><strong th:text="#{ultimo_login}"></strong> <span th:text="*{authUser.ultimoLogin}"></span></p>
-    <p><strong th:text="#{container}"></strong> <span th:text="*{nomeContainer}"></span></p>
-
-    <!-- Botão para Adicionar Arquivo -->
-    <div class="text-center mt-5">
-        <a th:href="@{/{id}/enviar_arquivo(id=${user.id})}" class="btn btn-primary" th:text="#{adicionar_arquivo}"></a>
+<div class="container mt-5">
+    <div class="text-center mb-4">
+        <h2 class="text-primary" th:text="#{home_title(*{authUser.email})}"></h2>
     </div>
 
-    <!-- Botão para Listar Arquivos Cadastrados -->
-    <div class="text-center mt-5">
-        <a th:href="@{/{id}/arquivos(id=${user.id})}" class="btn btn-primary" th:text="#{listar_arquivos}"></a>
+    <div class="card p-4 mb-4 shadow-sm">
+        <div class="card-body">
+            <p class="text-muted" th:text="${user.status}"></p>
+            <p><strong th:text="#{telefone}"></strong> <span th:text="*{telefone}"></span></p>
+            <p><strong th:text="#{data_criacao}"></strong> <span th:text="*{dataCriacao}"></span></p>
+            <p><strong th:text="#{ultimo_login}"></strong> <span th:text="*{authUser.ultimoLogin}"></span></p>
+            <p><strong th:text="#{container}"></strong> <span th:text="*{nomeContainer}"></span></p>
+        </div>
     </div>
 
-    <!-- Botão para Listar Insights Gerados -->
-    <div class="text-center mt-5">
-        <a th:href="@{/{id}/insights/listar(id=${user.id})}" class="btn btn-primary" th:text="#{listar_insights}"></a>
+    <div th:if="${roles.contains('ROLE_USER')}">
+        <div class="row text-center">
+            <div class="col-md-6 mb-3">
+                <a th:href="@{/{id}/arquivos(id=${user.id})}" class="btn btn-primary btn-block" th:text="#{listar_arquivos}"></a>
+            </div>
+            <div class="col-md-6 mb-3">
+                <a th:href="@{/{id}/enviar_arquivo(id=${user.id})}" class="btn btn-primary btn-block" th:text="#{adicionar_arquivo}"></a>
+            </div>
+            <div class="col-md-6 mb-3">
+                <a th:href="@{/{id}/insights/listar(id=${user.id})}" class="btn btn-primary btn-block" th:text="#{listar_insights}"></a>
+            </div>
+            <div class="col-md-6 mb-3">
+                <form method="post" th:action="@{/{id}/analisar(id=${user.id})}">
+                    <button type="submit" class="btn btn-primary btn-block" th:text="#{gerar_insight}"></button>
+                </form>
+            </div>
+            <!-- Centralização do Botão Excluir Conta -->
+            <div class="col-12 d-flex justify-content-center mb-3">
+                <form method="post" th:action="@{/{id}/remover(id=${user.id})}" onsubmit="return confirm(confirmMessage);">
+                    <button type="submit" class="btn btn-danger" th:text="#{excluir_conta}"></button>
+                </form>
+            </div>
+        </div>
     </div>
 
-    <!-- Botão para Gerar Insight -->
-    <div class="text-center mt-5">
-        <form method="post" th:action="@{/{id}/analisar(id=${user.id})}">
-            <button type="submit" class="btn btn-primary" th:text="#{gerar_insight}"></button>
-        </form>
+    <div th:if="${roles.contains('ROLE_ADMIN')}" class="text-center mt-4">
+        <a th:href="@{/all/usuarios}" class="btn btn-primary" th:text="#{listar_todos_usuarios}"></a>
     </div>
 
-    <!-- Botão para Atualizar Informações do Perfil -->
-    <div class="text-center mt-5">
-        <a th:href="@{/{id}/atualizar-usuario(id=${user.id})}" class="btn btn-primary" th:text="#{atualizar_perfil}"></a>
-    </div>
-
-    <!-- Botão de Excluir Conta -->
-    <div class="text-center mt-5">
-        <script th:inline="javascript">
-            /*<![CDATA[*/
-            var confirmMessage = /*[[${'#confirm_excluir'}]]*/ 'Are you sure you want to delete your account? This action cannot be undone.'; // Default message if translation fails
-            /*]]>*/
-        </script>
-
-        <form method="post" th:action="@{/{id}/remover-conta(id=${user.id})}" onsubmit="return confirm(confirmMessage);">
-            <button type="submit" class="btn btn-danger" th:text="#{excluir_conta}"></button>
-        </form>
-
-
-    </div>
-
-    <!-- Botão de Logout -->
-    <div class="text-center mt-5">
+    <div class="text-center mt-4">
+        <a th:href="@{/{id}/atualizar-usuario(id=${user.id})}" class="btn btn-primary mb-3" th:text="#{atualizar_perfil}"></a>
+        <a th:href="@{/chat_gpt}" class="btn btn-warning mb-3">Fazer pergunta ao CHAT GPT</a>
         <form method="post" th:action="@{/logout}">
             <button type="submit" class="btn btn-secondary" th:text="#{logout}"></button>
         </form>

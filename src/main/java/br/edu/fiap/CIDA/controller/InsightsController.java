@@ -32,7 +32,6 @@ import jakarta.servlet.http.HttpSession;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 @Controller
-@RestController
 public class InsightsController {
 	
 	private RestTemplate restTemplate;

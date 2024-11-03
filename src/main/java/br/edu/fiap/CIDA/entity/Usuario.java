@@ -40,8 +40,9 @@ public class Usuario {
     @Column(name = "DATA_CRIACAO")
     private LocalDateTime dataCriacao;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "STATUS")
-    private String status;
+    private Status status;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_documento")
