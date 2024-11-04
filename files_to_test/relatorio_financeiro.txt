@@ -1,0 +1,35 @@
+-----------------------------------------------------------
+                 RELATÓRIO FINANCEIRO - 3º TRIMESTRE 2024
+-----------------------------------------------------------
+
+Data de Geração: 11/09/2024
+Autor: Departamento Financeiro
+
+-----------------------------------------------------------
+                 BALANÇO GERAL
+-----------------------------------------------------------
+Receitas Totais: R$ 15.800.000,00
+Despesas Totais: R$ 12.400.000,00
+Lucro Líquido: R$ 3.400.000,00
+
+-----------------------------------------------------------
+                 ANÁLISE DETALHADA
+-----------------------------------------------------------
+
+1. **Receitas**:
+   - Vendas de produtos: R$ 12.000.000,00
+   - Serviços: R$ 2.500.000,00
+   - Outros: R$ 1.300.000,00
+
+2. **Despesas**:
+   - Custo de mercadorias vendidas: R$ 5.200.000,00
+   - Despesas operacionais: R$ 4.500.000,00
+   - Marketing: R$ 1.200.000,00
+   - Outros: R$ 1.500.000,00
+
+-----------------------------------------------------------
+                 CONCLUSÃO
+-----------------------------------------------------------
+O lucro do 3º trimestre mostra crescimento em relação ao trimestre anterior. 
+No entanto, observamos um aumento nas despesas operacionais e de marketing. 
+Recomendamos uma análise mais detalhada desses custos para otimizar as operações no próximo período.

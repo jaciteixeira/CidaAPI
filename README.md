@@ -29,9 +29,9 @@ Em resumo, a CIDA representa uma abordagem inovadora e acessível para transform
 
 ### Configuração de ambiente
 1. Adicionar a `api key` da OpenIA (fornecida pelo professor), no arquivo [application.yaml](src/main/resources/application.yaml) no campo `api-key:`
-```
-'api key ...'
-```
+   ```
+   'api key ...'
+   ```
 2. Rodar comando para subir RabbitMQ no docker localmente
     ``` bash
     docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management

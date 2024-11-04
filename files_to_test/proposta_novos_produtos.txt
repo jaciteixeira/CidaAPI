@@ -1,0 +1,48 @@
+-----------------------------------------------------------
+                 PROPOSTA DE NOVOS PRODUTOS
+-----------------------------------------------------------
+
+Data de Criação: 12/09/2024
+Autor: Departamento de Desenvolvimento de Produtos
+
+-----------------------------------------------------------
+                 INTRODUÇÃO
+-----------------------------------------------------------
+Esta proposta detalha os novos produtos a serem lançados no mercado no próximo ano. 
+Ela foi desenvolvida com base em pesquisas de mercado e tendências de consumo observadas 
+nos últimos meses.
+
+-----------------------------------------------------------
+                 NOVOS PRODUTOS
+-----------------------------------------------------------
+
+1. **Produto 1**: Smartwatch XZ-5
+   Categoria: Eletrônicos
+   Características:
+      - Monitoramento de saúde 24 horas
+      - Bateria de longa duração (até 14 dias)
+      - Design resistente à água
+   Preço Sugerido: R$ 1.299,00
+
+2. **Produto 2**: Fone de Ouvido XY-Noise Cancel
+   Categoria: Áudio
+   Características:
+      - Cancelamento de ruído ativo
+      - Autonomia de 20 horas de uso contínuo
+      - Conectividade Bluetooth 5.2
+   Preço Sugerido: R$ 699,00
+
+3. **Produto 3**: Câmera Drone VISION-X
+   Categoria: Fotografia e Vídeo
+   Características:
+      - Resolução de vídeo 4K
+      - Estabilização óptica
+      - Controle remoto via app
+   Preço Sugerido: R$ 4.500,00
+
+-----------------------------------------------------------
+                 CONCLUSÃO
+-----------------------------------------------------------
+Os produtos propostos foram selecionados com base no potencial de mercado e inovação tecnológica.
+Nossa previsão é de que os novos produtos impactem positivamente as vendas da empresa em 15% 
+no primeiro semestre de lançamento.
