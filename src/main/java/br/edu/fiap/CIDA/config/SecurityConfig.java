@@ -18,31 +18,31 @@ public class SecurityConfig {
     }
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((requests) -> requests
-//                        .requestMatchers("/", "/novo_usuario", "/usuario").permitAll()
-//                        .requestMatchers("/usuarios", "/remove-usuario", "/atualiza-status-usuario").hasAuthority("ROLE_ADMIN")
-                        .anyRequest().permitAll()
+                        .requestMatchers("/", "/novo_usuario", "/usuario").permitAll()
+                        .requestMatchers("/usuarios", "/remove-usuario", "/atualiza-status-usuario").hasAuthority("ROLE_ADMIN")
+                        .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form
                         .loginPage("/login")
                         .failureUrl("/login?erro=true")
-                        .defaultSuccessUrl("/home",true)
+                        .defaultSuccessUrl("/home", true)
                         .permitAll()
                 )
                 .logout((logout) -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout=true")
                         .permitAll()
+                )
+                .exceptionHandling((exception) -> exception
+                        .accessDeniedHandler(
+                                (request, response, accessDeniedException) ->
+                                        response.sendRedirect("/acesso_negado")
+                        )
                 );
-//                .exceptionHandling((exception) -> exception
-//                        .accessDeniedHandler(
-//                                (request,response,accessDeniedHandler) ->
-//    											{response.sendRedirect("/acesso_negado");}
-//                        ));
 
-        System.out.println("HTTP: "+http);
         return http.build();
     }
 }

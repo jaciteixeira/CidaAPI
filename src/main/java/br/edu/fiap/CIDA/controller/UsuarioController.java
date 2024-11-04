@@ -28,7 +28,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Controller
-//@RestController
 public class UsuarioController {
 
     @Autowired
@@ -66,98 +65,103 @@ public class UsuarioController {
     public ModelAndView insereUsuario(@Valid UsuarioRequest userRequest,
                                       BindingResult bindingResult) {
 
-        String prefix = "cida-container-";
-        String uuidPart = UUID.randomUUID().toString().replaceAll("-", "").toLowerCase();
-
-        String containerName = prefix + uuidPart;
-
-        if (containerName.length() > 63) {
-            containerName = containerName.substring(0, 63);
-        }
-
-
-        String ROLE = (userRequest.email().contains("@opengroup")) ? "ROLE_ADMIN" : "ROLE_USER";
-
-        Role roleUser = roleRepository.findByName(ROLE)
-                .orElseThrow(() -> new IllegalArgumentException("Role não encontrada"));
-
-        Set<Role> roles = new HashSet<>();
-        roles.add(roleUser);
-
-        var authUser = Auth.builder()
-                .email(userRequest.email())
-                .hashSenha(passwordEncoder.encode(userRequest.senha()))
-                .ultimoLogin(LocalDateTime.now())
-                .roles(roles)
-                .build();
-        var user = Usuario.builder()
-                .authUser(authUser)
-                .telefone(userRequest.telefone())
-                .tipoDoc(userRequest.tipoDoc())
-                .numeroDocumento(userRequest.numeroDocumento())
-                .dataCriacao(LocalDateTime.now())
-                .nomeContainer(containerName)
-                .build();
-
-        if (user.getAuthUser() != null) {
-            Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-            Set<ConstraintViolation<Auth>> authViolations = validator.validate(user.getAuthUser());
-            authViolations.forEach(violation ->
-                    bindingResult.rejectValue("auth_user." + violation.getPropertyPath(), null, violation.getMessage())
-            );
-        }
-
         if (bindingResult.hasErrors()) {
             var mv = new ModelAndView("new_user");
             mv.addObject("tipoDoc", TipoDocumento.values());
             return mv;
+        } else {
+
+            System.out.println(userRequest);
+
+            String prefix = "cida-container-";
+            String uuidPart = UUID.randomUUID().toString().replaceAll("-", "").toLowerCase();
+
+            String containerName = prefix + uuidPart;
+
+            if (containerName.length() > 63) {
+                containerName = containerName.substring(0, 63);
+            }
+
+
+            String ROLE = (userRequest.email().contains("@opengroup")) ? "ROLE_ADMIN" : "ROLE_USER";
+
+            Role roleUser = roleRepository.findByName(ROLE)
+                    .orElseThrow(() -> new IllegalArgumentException("Role não encontrada"));
+
+            Set<Role> roles = new HashSet<>();
+            roles.add(roleUser);
+
+            var authUser = Auth.builder()
+                    .email(userRequest.email())
+                    .hashSenha(passwordEncoder.encode(userRequest.senha()))
+                    .ultimoLogin(LocalDateTime.now())
+                    .roles(roles)
+                    .build();
+            var user = Usuario.builder()
+                    .authUser(authUser)
+                    .telefone(userRequest.telefone())
+                    .tipoDoc(userRequest.tipoDoc())
+                    .numeroDocumento(userRequest.numeroDocumento())
+                    .dataCriacao(LocalDateTime.now())
+                    .nomeContainer(containerName)
+                    .build();
+
+            if (user.getAuthUser() != null) {
+                Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+                Set<ConstraintViolation<Auth>> authViolations = validator.validate(user.getAuthUser());
+                authViolations.forEach(violation ->
+                        bindingResult.rejectValue("auth_user." + violation.getPropertyPath(), null, violation.getMessage())
+                );
+            }
+
+
+            try {
+                repo.save(user);
+            } catch (DataIntegrityViolationException e) {
+                String errorMessage = "Erro ao salvar o usuário: " + e.getMostSpecificCause().getMessage();
+                bindingResult.reject("error.usuario", errorMessage);
+
+                var mv = new ModelAndView("new_user");
+                mv.addObject("tipoDoc", TipoDocumento.values());
+                return mv;
+            }
+
+            return new ModelAndView("redirect:/home");
         }
+    }
 
-        try {
-            repo.save(user);
-        } catch (DataIntegrityViolationException e) {
-            String errorMessage = "Erro ao salvar o usuário: " + e.getMostSpecificCause().getMessage();
-            bindingResult.reject("error.usuario", errorMessage);
 
-            var mv = new ModelAndView("new_user");
-            mv.addObject("tipoDoc", TipoDocumento.values());
+        @GetMapping("/home")
+        public ModelAndView transfToHome () {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+            Object principal = auth.getPrincipal();
+            Auth usuario;
+
+            if (principal instanceof Usuario) {
+                usuario = (Auth) principal;
+            } else if (principal instanceof org.springframework.security.core.userdetails.User) {
+                // Handle the case where the principal is Spring Security's User
+                String username = ((org.springframework.security.core.userdetails.User) principal).getUsername();
+                usuario = repoAuth.findByEmail(username)
+                        .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+            } else {
+                throw new IllegalStateException("Tipo de principal não esperado: " + principal.getClass());
+            }
+
+            //TODO returnar usuario para home
+
+
+            ModelAndView mv = new ModelAndView("home");
+            mv.addObject("usuario", usuario);
             return mv;
         }
 
-        return new ModelAndView("redirect:/home");
-    }
-
-
-    @GetMapping("/home")
-    public ModelAndView transfToHome() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        Object principal = auth.getPrincipal();
-        Auth usuario;
-
-        if (principal instanceof Usuario) {
-            usuario = (Auth) principal;
-        } else if (principal instanceof org.springframework.security.core.userdetails.User) {
-            // Handle the case where the principal is Spring Security's User
-            String username = ((org.springframework.security.core.userdetails.User) principal).getUsername();
-            usuario = repoAuth.findByEmail(username)
-                    .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
-        } else {
-            throw new IllegalStateException("Tipo de principal não esperado: " + principal.getClass());
+        @GetMapping("/login")
+        public String login () {
+            return "login";
         }
 
-        //TODO returnar usuario para home
-
-
-        ModelAndView mv = new ModelAndView("home");
-        mv.addObject("usuario", usuario);
-        return mv;
-    }
-
-    @GetMapping("/login")
-    public String login() {
-        return "login";
-    }
 
 
 //    @PostMapping("/login")

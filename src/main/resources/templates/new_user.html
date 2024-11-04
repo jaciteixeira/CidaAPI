@@ -1,5 +1,5 @@
-<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -66,22 +66,22 @@
     <form th:object="${usuarioRequest}" action="/usuario" method="post">
         <div class="mb-3">
             <label for="email" class="form-label">Endereço de Email</label>
-            <input type="email" class="form-control" id="email" th:field="*{email}" th:errorclass="is-invalid" placeholder="Digite seu email">
+            <input type="email" name="email" class="form-control" id="email" th:field="*{email}" th:errorclass="is-invalid" placeholder="Digite seu email">
             <div class="invalid-feedback" th:errors="*{email}"></div>
         </div>
         <div class="mb-3">
             <label for="senha" class="form-label">Senha</label>
-            <input type="password" class="form-control" id="senha" th:field="*{senha}" th:errorclass="is-invalid" placeholder="Digite sua senha">
+            <input type="password" name="senha" class="form-control" id="senha" th:field="*{senha}" th:errorclass="is-invalid" placeholder="Digite sua senha">
             <div class="invalid-feedback" th:errors="*{senha}"></div>
         </div>
         <div class="mb-3">
             <label for="telefone" class="form-label">Telefone</label>
-            <input type="text" class="form-control" id="telefone" th:field="*{telefone}" th:errorclass="is-invalid" placeholder="Digite seu telefone">
+            <input type="text" name="telefone" class="form-control" id="telefone" th:field="*{telefone}" th:errorclass="is-invalid" placeholder="Digite seu telefone">
             <div class="invalid-feedback" th:errors="*{telefone}"></div>
         </div>
         <div class="mb-3">
             <label for="tipoDoc" class="form-label">Tipo de Documento</label>
-            <select class="form-control" id="tipoDoc" th:field="*{tipoDoc}" th:errorclass="is-invalid">
+            <select class="form-control" name="tipoDoc" id="tipoDoc" th:field="*{tipoDoc}" th:errorclass="is-invalid">
                 <option value="" selected>Selecione o tipo de documento</option>
                 <option th:each="tipo : ${tipoDoc}" th:value="${tipo}" th:text="${tipo}">Selecione o tipo de documento</option>
             </select>
@@ -89,9 +89,10 @@
         </div>
         <div class="mb-3">
             <label for="numeroDocumento" class="form-label">Número do Documento</label>
-            <input type="text" class="form-control" id="numeroDocumento" th:field="*{numeroDocumento}" th:errorclass="is-invalid" placeholder="Digite o número do documento">
+            <input type="text" class="form-control" name="numeroDocumento" id="numeroDocumento" th:field="*{numeroDocumento}" th:errorclass="is-invalid" placeholder="Digite o número do documento">
             <div class="invalid-feedback" th:errors="*{numeroDocumento}"></div>
         </div>
+        <input type="hidden" name="_csrf" th:value="${_csrf.token}">
         <button type="submit" class="btn btn-primary">Cadastrar</button>
     </form>
 
