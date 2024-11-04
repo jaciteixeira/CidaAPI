@@ -49,7 +49,12 @@
             </div>
             <!-- Centralização do Botão Excluir Conta -->
             <div class="col-12 d-flex justify-content-center mb-3">
-                <form method="post" th:action="@{/{id}/remover(id=${user.id})}" onsubmit="return confirm(confirmMessage);">
+                <script th:inline="javascript">
+                    /*<![CDATA[*/
+                    var confirmMessage = /*[[#{confirm_excluir}]]*/ 'Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.';
+                    /*]]>*/
+                </script>
+                <form method="post" th:action="@{/{id}/remover-conta(id=${user.id})}" onsubmit="return confirm(confirmMessage);">
                     <button type="submit" class="btn btn-danger" th:text="#{excluir_conta}"></button>
                 </form>
             </div>
