@@ -1,10 +1,12 @@
 package br.edu.fiap.CIDA.service;
 
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import br.edu.fiap.CIDA.entity.Auth;
 import br.edu.fiap.CIDA.repository.AuthRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,19 +19,15 @@ import org.springframework.stereotype.Service;
 public class UsuarioUserDetailsService implements UserDetailsService {
 
     @Autowired
-    private AuthRepository uRep;
+    private AuthRepository authRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        Auth resgatado = uRep.findByEmail(email).orElseThrow(
-                () -> new UsernameNotFoundException("Usuário " + email + " não encontrado na base de dados"));
+        Auth authUser = authRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + email));
 
-        var user =  new User(resgatado.getEmail(), resgatado.getHashSenha(), resgatado.getRoles()
+        return new User(authUser.getEmail(), authUser.getHashSenha(), authUser.getRoles()
                 .stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList()));
-
-        System.out.println("UsuarioUserDetails"+user);
-        return user;
     }
-
 }

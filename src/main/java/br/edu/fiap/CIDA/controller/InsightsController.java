@@ -89,6 +89,10 @@ public class InsightsController {
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(request, headers);
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return new ModelAndView("error").addObject("message", "Erro ao gerar insight");
+        }
+
         // Use ObjectMapper to parse the response body
         ObjectMapper objectMapper = new ObjectMapper();
         String descricao = null;

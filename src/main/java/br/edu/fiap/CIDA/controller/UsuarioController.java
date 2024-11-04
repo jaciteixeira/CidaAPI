@@ -10,14 +10,19 @@ import br.edu.fiap.CIDA.repository.ArquivoRepository;
 import br.edu.fiap.CIDA.repository.AuthRepository;
 import br.edu.fiap.CIDA.repository.RoleRepository;
 import br.edu.fiap.CIDA.repository.UsuarioRepository;
+import br.edu.fiap.CIDA.service.UsuarioUserDetailsService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -26,6 +31,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 public class UsuarioController {
@@ -71,7 +77,15 @@ public class UsuarioController {
             return mv;
         } else {
 
-            System.out.println(userRequest);
+
+            Optional<Auth> auth = repoAuth.findByEmail(userRequest.email());
+            if(auth.isPresent()) {
+                bindingResult.rejectValue("email", "error.email", "E-mail já cadastrado.");
+
+                var mv = new ModelAndView("new_user");
+                mv.addObject("tipoDoc", TipoDocumento.values());
+                return mv;
+            }
 
             String prefix = "cida-container-";
             String uuidPart = UUID.randomUUID().toString().replaceAll("-", "").toLowerCase();
@@ -117,6 +131,7 @@ public class UsuarioController {
 
             try {
                 repo.save(user);
+
             } catch (DataIntegrityViolationException e) {
                 String errorMessage = "Erro ao salvar o usuário: " + e.getMostSpecificCause().getMessage();
                 bindingResult.reject("error.usuario", errorMessage);
@@ -131,31 +146,24 @@ public class UsuarioController {
     }
 
 
-        @GetMapping("/home")
-        public ModelAndView transfToHome () {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    @GetMapping("/home")
+    public ModelAndView transfToHome(HttpSession session) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-            Object principal = auth.getPrincipal();
-            Auth usuario;
+        String email = auth.getName();
 
-            if (principal instanceof Usuario) {
-                usuario = (Auth) principal;
-            } else if (principal instanceof org.springframework.security.core.userdetails.User) {
-                // Handle the case where the principal is Spring Security's User
-                String username = ((org.springframework.security.core.userdetails.User) principal).getUsername();
-                usuario = repoAuth.findByEmail(username)
-                        .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
-            } else {
-                throw new IllegalStateException("Tipo de principal não esperado: " + principal.getClass());
-            }
+        Auth autenticacao = repoAuth.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
-            //TODO returnar usuario para home
+        Usuario usuario  = repo.findByAuthUser(autenticacao);
 
+        session.setAttribute("usuario", usuario);
 
-            ModelAndView mv = new ModelAndView("home");
-            mv.addObject("usuario", usuario);
-            return mv;
-        }
+        ModelAndView mv = new ModelAndView("home");
+
+        mv.addObject("usuario", usuario);
+        return mv;
+    }
 
         @GetMapping("/login")
         public String login () {
