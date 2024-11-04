@@ -82,16 +82,6 @@ public class UsuarioController {
             return mv;
         }
 
-        Optional<Auth> auth = authRepository.findByEmail(userRequest.email());
-        if(auth.isPresent()) {
-            bindingResult.rejectValue("email", "error.email", "E-mail já cadastrado.");
-
-            var mv = new ModelAndView("new_user");
-            mv.addObject("tipoDoc", TipoDocumento.values());
-            return mv;
-        }
-
-
         String prefix = "cida-container-";
         String uuidPart = UUID.randomUUID().toString().replaceAll("-", "").toLowerCase();
 
